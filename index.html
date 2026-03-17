@@ -309,6 +309,14 @@ tbody tr:last-child td{border-bottom:none;}
   .scv{font-size:1.2rem;}
   .tbl .pt{font-size:.82rem;}
 }
+
+.hamburger{display:none;font-size:22px;cursor:pointer;margin-right:10px}
+@media(max-width:768px){
+  .sb{position:fixed;left:0;top:0;height:100%;transform:translateX(-100%);transition:transform .3s;z-index:1000}
+  .sb.open{transform:translateX(0)}
+  .hamburger{display:block}
+}
+
 </style>
 </head>
 <body>
@@ -343,6 +351,7 @@ tbody tr:last-child td{border-bottom:none;}
 <!-- APP -->
 <div id="app">
 <div class="layout">
+<div class="hamburger" id="hamburger">☰</div>
 <aside class="sb">
   <div class="sbh">
     <div class="sblogo"><div class="ico">&#128197;</div><span>근태관리</span></div>
@@ -1899,6 +1908,15 @@ function dlCSV(rows, fn){
 }
 g('btn-exlv').addEventListener('click',function(){ if(!leaves.length){toast('\ub0b4\ubcf4\ub0bc \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.','wt');return;} var rows=[['\uc9c1\uc6d0','\uc885\ub958','\uc2dc\uc791','\uc885\ub8cc','\uc77c\uc218','\uc2dc\uac04','\uc0ac\uc720','\uc2e0\uccad\uc77c','\uc0c1\ud0dc']]; leaves.forEach(function(r){rows.push([r.empNm,r.type,r.sd,r.ed||r.sd,r.wd||0,r.wh||0,r.rsn,r.appAt,r.status]);}); dlCSV(rows,'\ud734\uac00\ub0b4\uc5ed.csv'); toast('CSV \ub2e4\uc6b4\ub85c\ub4dc','ok'); });
 g('btn-exot').addEventListener('click',function(){ if(!otList.length){toast('\ub0b4\ubcf4\ub0bc \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.','wt');return;} var rows=[['\uc9c1\uc6d0','\uadfc\ubb34\uc77c','\uc2dc\uc791','\uc885\ub8cc','\uc2dc\uac04\uc218','\uc5c5\ubb34\ub0b4\uc6a9','\ube44\uace0','\uc2e0\uccad\uc77c','\uc0c1\ud0dc']]; otList.forEach(function(r){rows.push([r.empNm,r.dt,r.start,r.end,fmtH(r.hours),r.desc,r.note||'',r.appAt,r.status]);}); dlCSV(rows,'\ucd08\uacfc\uadfc\ubb34\ub0b4\uc5ed.csv'); toast('CSV \ub2e4\uc6b4\ub85c\ub4dc','ok'); });
+
+
+var hb=document.getElementById('hamburger');
+var sb=document.querySelector('.sb');
+if(hb){
+ hb.addEventListener('click',function(){
+   sb.classList.toggle('open');
+ });
+}
 
 }); // DOMContentLoaded end
 </script>
