@@ -859,7 +859,7 @@ var otSettings = {
 /* ══════════════════════════════════════════════════════════════
    ▼▼▼ Google Apps Script URL 설정 (모바일과 동일한 URL 사용) ▼▼▼
    ═══════════════════════════════════════════════════════════════ */
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbxz4rsNP5Mcx4sqJqkeElz1fOw9d_yEX4P3utB3vZfI2gW4DC7hj08dG_n9jYzT6Vjr/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbzD7RgvtJkt_xKmSaWoxw6Wgy0yCYGhmlQIvWzTUrrh1eafZt5G1S6uzMbCmjSx9z3X/exec';
 
 /* ── API 헬퍼 (GAS 기반) ── */
 function _gasGet(params) {
@@ -869,10 +869,10 @@ function _gasGet(params) {
   return fetch(GAS_URL+'?'+qs).then(function(r){return r.json();});
 }
 function _gasPost(action, body) {
-  return fetch(GAS_URL+'?action='+action, {
-    method:'POST',
-    body: JSON.stringify(body)
-  }).then(function(r){return r.json();});
+  /* GAS CORS: GET 방식으로 payload 전송 */
+  var encoded = encodeURIComponent(JSON.stringify(body));
+  var url = GAS_URL + '?action=' + action + '&payload=' + encoded;
+  return fetch(url).then(function(r){return r.json();});
 }
 
 /* GET 래퍼들 — GAS 액션 매핑 */
@@ -930,20 +930,23 @@ function apiDel(path) {
 }
 
 function dbUserToEmp(u){
-
   var roleMap = {'admin':'admin','user':'employee'};
   return {
-    id: String(u.id),        // 모바일은 string id 사용
-    dbId: u.id,              // DB PK 보존
-    name: u.name,
-    join: u.join_date,
-    role: roleMap[u.role] || u.role,
-    total: u.total_leaves,
-    usedD: u.used_leaves,
-    usedH: 0,
-    pw: '',                  // 보안상 클라이언트에 저장 안 함
-    ccTotal: 3, ccUsed: 0,
-    slTotal: 60, slUsed: 0
+    id:       String(u.id),
+    dbId:     u.id,
+    name:     u.name,
+    join:     u.join_date,
+    role:     roleMap[u.role] || u.role,
+    total:    parseFloat(u.total_leaves)  || 0,
+    usedD:    parseFloat(u.used_leaves)   || 0,
+    usedH:    0,
+    pw:       '',
+    ccTotal:  parseInt(u.cc_total)        || 3,
+    ccUsed:   parseFloat(u.cc_used)       || 0,
+    slTotal:  parseInt(u.sl_total)        || 60,
+    slUsed:   parseFloat(u.sl_used)       || 0,
+    otRate:   parseInt(u.ot_rate)         || 0,
+    otMaxHours: parseInt(u.ot_max_hours)  || 10
   };
 }
 
@@ -1218,6 +1221,26 @@ g('inp-name').addEventListener('keydown', function(e){ if(e.key==='Enter') g('in
 g('inp-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
 function doLogout(){ CU=null; g('login-wrap').style.display='flex'; g('app').style.display='none'; g('inp-name').value=''; g('inp-pw').value=''; g('lerr').textContent=''; }
+g('btn-chpw').addEventListener('click',function(){ g('cpw-cur').value=''; g('cpw-new').value=''; g('cpw-cf').value=''; g('cpw-err').textContent=''; openM('mo-cpw'); });
+
+g('btn-cpwok').addEventListener('click',function(){
+  var cur=g('cpw-cur').value, nw=g('cpw-new').value, cf=g('cpw-cf').value;
+  var erl=g('cpw-err');
+  if(!cur){erl.textContent='현재 비밀번호를 입력하세요.';return;}
+  if(!nw||nw.length<4){erl.textContent='새 비밀번호는 4자 이상이어야 합니다.';return;}
+  if(nw!==cf){erl.textContent='새 비밀번호가 일치하지 않습니다.';return;}
+  if(nw===cur){erl.textContent='새 비밀번호가 현재와 동일합니다.';return;}
+  apiPost('/api/login',{name:CU.name,password:cur})
+    .then(function(chk){
+      if(!chk.ok){erl.textContent='현재 비밀번호가 올바르지 않습니다.';return;}
+      apiPut('/api/users/'+CU.dbId,{password:nw})
+        .then(function(res){
+          if(!res.ok){erl.textContent=res.error||'변경 실패';return;}
+          closeM('mo-cpw'); toast('비밀번호가 변경되었습니다.','ok');
+        }).catch(function(){erl.textContent='서버 연결 오류';});
+    }).catch(function(){erl.textContent='서버 연결 오류';});
+});
+
 g('btn-logout').addEventListener('click', doLogout);
 
 
@@ -1273,7 +1296,7 @@ function initApp(){
   g('topnm').textContent=CU.name;
   g('nav-appr').style.display=(CU.role==='admin'||CU.role==='approver')?'':'none';
   g('nav-adm').style.display=CU.role==='admin'?'':'none';
-  updateResetBtn();
+  /* updateResetBtn 제거 — 초기화 기능 미사용 */
   g('la-emp').value=CU.name; g('ot-emp').value=CU.name;
   var td=todayS(); g('la-s').value=td; g('la-e').value=td; g('la-hd').value=td; g('la-td').value=td; g('ot-dt').value=td;
   buildOTTimeOpts(td);
@@ -2213,7 +2236,13 @@ window.saveAONote=function(id){
     if(parseInt(parts[0])*60+parseInt(parts[1])>600){toast('최대 10:00까지 입력 가능합니다.','wt');return;}
   }
   var r=otList.find(function(x){return x.id===id;});
-  if(r){r.note=val;saveData();toast('인정시간이 저장되었습니다.','ok');renderAO();}
+  if(r){
+    apiPut('/api/ot/'+id+'/note',{id:id,note:val})
+      .then(function(res){
+        if(!res.ok){ toast(res.error||'저장 실패','er'); return; }
+        r.note=val; saveData(); toast('인정시간이 저장되었습니다.','ok'); renderAO();
+      }).catch(function(){ toast('서버 연결 오류','er'); });
+  }
 };
 ['ao-emp','ao-yr','ao-mo'].forEach(function(id){g(id).addEventListener('change',renderAO);});
 window.renderAO=renderAO;
