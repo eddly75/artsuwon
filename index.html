@@ -2,22 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<meta name="theme-color" content="#1a2236">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>근태관리 시스템</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>근태관리 시스템 (PC)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f0f4f8;--surf:#fff;--surf2:#f7f9fc;--bdr:#e2e8f0;--acc:#2d69f0;--accl:#ebf0ff;--acc2:#10b981;--acc3:#f59e0b;--acc4:#ef4444;--acc5:#8b5cf6;--txt:#1e293b;--txt2:#64748b;--txt3:#94a3b8;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);--shlg:0 8px 32px rgba(0,0,0,.12);--r:12px;--sw:240px;}
+:root{--bg:#f0f4f8;--surf:#fff;--surf2:#f7f9fc;--bdr:#e2e8f0;--acc:#2d69f0;--accl:#ebf0ff;--acc2:#10b981;--acc3:#f59e0b;--acc4:#ef4444;--acc5:#8b5cf6;--txt:#1e293b;--txt2:#64748b;--txt3:#94a3b8;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);--shlg:0 8px 32px rgba(0,0,0,.12);--r:12px;--sw:260px;}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);font-size:14px;line-height:1.5;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);font-size:14.5px;line-height:1.6;}
 button,input,select,textarea{font-family:'Noto Sans KR',sans-serif;}
 button{cursor:pointer;}
-::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+::-webkit-scrollbar{width:7px;height:7px;}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px;}::-webkit-scrollbar-track{background:transparent;}
 /* LOGIN */
 #login-wrap{position:fixed;inset:0;background:linear-gradient(135deg,#1a2236,#2d3f6b,#1e3a5f);display:flex;align-items:center;justify-content:center;z-index:9999;}
-.lcard{background:#fff;border-radius:20px;padding:48px 40px;width:420px;max-width:95vw;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fu .4s ease;}
+.lcard{background:#fff;border-radius:20px;padding:56px 52px;width:460px;max-width:95vw;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:fu .4s ease;}
 @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .llogo{text-align:center;margin-bottom:32px;}
 .llogo .icon{width:64px;height:64px;background:linear-gradient(135deg,var(--acc),var(--acc5));border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:12px;}
@@ -62,39 +59,39 @@ button{cursor:pointer;}
 .sfbtn:hover{color:#fff;}
 /* MAIN */
 .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;}
-.topbar{background:#fff;border-bottom:1px solid var(--bdr);padding:0 26px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar{background:#fff;border-bottom:1px solid var(--bdr);padding:0 36px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
 .tbl .bc{font-size:.75rem;color:var(--txt3);}
-.tbl .pt{font-size:.98rem;font-weight:700;}
+.tbl .pt{font-size:1.05rem;font-weight:700;}
 .tbr{display:flex;align-items:center;gap:10px;}
 .nbtn{position:relative;width:34px;height:34px;border-radius:8px;border:1.5px solid var(--bdr);background:transparent;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
 .nbtn:hover{border-color:var(--acc);background:var(--accl);}
 .nd{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--acc4);border-radius:50%;border:1.5px solid #fff;display:none;}
-.upill{display:flex;align-items:center;gap:7px;background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:4px 12px 4px 4px;}
+.upill{display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:4px 14px 4px 4px;}
 .upill span{font-size:.83rem;font-weight:600;}
-.content{padding:22px 26px;flex:1;}
+.content{padding:28px 36px;flex:1;}
 /* PAGE */
 .page{display:none;}
 .page.on{display:block;animation:fi .2s ease;}
 @keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 /* GUIDE */
-.guide{background:linear-gradient(135deg,#f0f4ff,#e8f4ff);border:1px solid #c7d7ff;border-radius:10px;padding:13px 16px;margin-bottom:18px;}
+.guide{background:linear-gradient(135deg,#f0f4ff,#e8f4ff);border:1px solid #c7d7ff;border-radius:10px;padding:14px 20px;margin-bottom:22px;}
 .guide h4{font-size:.83rem;font-weight:700;color:var(--acc);margin-bottom:5px;}
 .guide ul{padding-left:15px;}
 .guide li{font-size:.76rem;color:var(--txt2);margin-bottom:2px;line-height:1.6;}
 /* CARD */
 .card{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:16px;}
-.ch{padding:14px 18px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
+.ch{padding:16px 22px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
 .ct{font-size:.88rem;font-weight:700;display:flex;align-items:center;gap:6px;}
-.cb{padding:18px;}
+.cb{padding:22px;}
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:18px;}
-.sc{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;box-shadow:var(--sh);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:22px;}
+.sc{background:#fff;border:1px solid var(--bdr);border-radius:var(--r);padding:20px 22px;box-shadow:var(--sh);}
 .scico{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:9px;}
 .scico.bl{background:var(--accl);color:var(--acc);}
 .scico.gr{background:#d1fae5;color:var(--acc2);}
 .scico.am{background:#fef3c7;color:var(--acc3);}
 .scico.pu{background:#ede9fe;color:var(--acc5);}
-.scv{font-family:'DM Mono',monospace;font-size:1.7rem;font-weight:500;line-height:1;color:var(--txt);}
+.scv{font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:500;line-height:1;color:var(--txt);}
 .scv small{font-size:.88rem;color:var(--txt2);font-family:'Noto Sans KR',sans-serif;}
 .scl{font-size:.73rem;color:var(--txt2);margin-top:3px;font-weight:500;}
 .scbar{height:3px;background:var(--bdr);border-radius:2px;margin-top:9px;overflow:hidden;}
@@ -116,14 +113,14 @@ button{cursor:pointer;}
 .fc:focus{border-color:var(--acc);background:#fff;box-shadow:0 0 0 3px rgba(45,105,240,.08);}
 .fc::placeholder{color:var(--txt3);}
 textarea.fc{resize:vertical;min-height:76px;}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .fh{font-size:.71rem;color:var(--txt3);margin-top:3px;}
 .fh.inf{color:var(--acc);}
 /* TABLE */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-thead th{padding:9px 13px;font-size:.71rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;background:var(--surf2);border-bottom:2px solid var(--bdr);white-space:nowrap;}
-tbody td{padding:11px 13px;border-bottom:1px solid var(--bdr);font-size:.84rem;color:var(--txt);vertical-align:middle;}
+thead th{padding:11px 16px;font-size:.73rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;background:var(--surf2);border-bottom:2px solid var(--bdr);white-space:nowrap;}
+tbody td{padding:13px 16px;border-bottom:1px solid var(--bdr);font-size:.875rem;color:var(--txt);vertical-align:middle;}
 tbody tr:hover td{background:#f8fafc;}
 tbody tr:last-child td{border-bottom:none;}
 /* BADGES */
@@ -136,7 +133,7 @@ tbody tr:last-child td{border-bottom:none;}
 /* MODAL */
 .mob{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px);padding:16px;}
 .mob.on{display:flex;}
-.mo{background:#fff;border-radius:14px;width:100%;max-width:540px;box-shadow:var(--shlg);display:flex;flex-direction:column;max-height:90vh;animation:moi .22s cubic-bezier(.34,1.56,.64,1);}
+.mo{background:#fff;border-radius:14px;width:100%;max-width:580px;box-shadow:var(--shlg);display:flex;flex-direction:column;max-height:88vh;animation:moi .22s cubic-bezier(.34,1.56,.64,1);}
 .mosm{max-width:400px;}
 @keyframes moi{from{opacity:0;transform:scale(.93) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .moh{padding:18px 22px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -146,11 +143,8 @@ tbody tr:last-child td{border-bottom:none;}
 .mob2{padding:18px 22px;overflow-y:auto;flex:1;}
 .mof{padding:14px 22px;border-top:1px solid var(--bdr);display:flex;justify-content:flex-end;gap:7px;flex-shrink:0;}
 /* TOAST */
-#twrap{position:fixed;bottom:20px;right:20px;z-index:9000;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
-@media(max-width:768px){
-  #twrap{bottom:auto;top:70px;left:12px;right:12px;}
-  .toast{max-width:100%;}
-}
+#twrap{position:fixed;bottom:28px;right:28px;z-index:9000;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+
 .toast{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;box-shadow:var(--shlg);animation:ti .25s ease;pointer-events:all;display:flex;gap:10px;align-items:flex-start;max-width:320px;}
 @keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 .tok{border-left:4px solid var(--acc2);}.twt{border-left:4px solid var(--acc3);}.ter{border-left:4px solid var(--acc4);}.tinf{border-left:4px solid var(--acc);}
@@ -158,7 +152,7 @@ tbody tr:last-child td{border-bottom:none;}
 .tmsg{font-size:.82rem;color:var(--txt);flex:1;line-height:1.5;}
 .tx{background:transparent;border:none;color:var(--txt3);font-size:13px;cursor:pointer;flex-shrink:0;padding:0 2px;}
 /* NOTIF INBOX */
-.ni{position:fixed;top:58px;right:12px;width:340px;background:#fff;border:1px solid var(--bdr);border-radius:12px;box-shadow:var(--shlg);z-index:150;display:none;flex-direction:column;max-height:480px;}
+.ni{position:fixed;top:60px;right:20px;width:380px;background:#fff;border:1px solid var(--bdr);border-radius:12px;box-shadow:var(--shlg);z-index:150;display:none;flex-direction:column;max-height:520px;}
 .ni.on{display:flex;}
 .nih{padding:12px 14px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;}
 .nih h3{font-size:.88rem;font-weight:700;}
@@ -214,7 +208,7 @@ tbody tr:last-child td{border-bottom:none;}
 .sht{font-size:.98rem;font-weight:700;}
 .shs{font-size:.76rem;color:var(--txt2);margin-top:2px;}
 /* DASHBOARD GRID */
-.dg{display:grid;grid-template-columns:2fr 1fr;gap:14px;}
+.dg{display:grid;grid-template-columns:2fr 1fr;gap:20px;}
 /* CALC BOX */
 .cbox{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:11px 14px;margin-bottom:13px;display:flex;gap:20px;flex-wrap:wrap;}
 .ci span{font-size:.72rem;color:var(--txt2);}
@@ -223,25 +217,18 @@ tbody tr:last-child td{border-bottom:none;}
 .thint{font-size:.73rem;color:var(--txt2);padding:4px 2px;margin-top:-6px;margin-bottom:6px;}
 
 /* ── 햄버거 버튼 ── */
-.hbg{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;border-radius:8px;border:1.5px solid var(--bdr);background:transparent;cursor:pointer;padding:6px;}
-.hbg span{display:block;height:2px;background:var(--txt);border-radius:2px;transition:all .25s;}
-.hbg.on span:nth-child(1){transform:translateY(7px) rotate(45deg);}
-.hbg.on span:nth-child(2){opacity:0;}
-.hbg.on span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.hbg{display:none !important;}
+
+
+
+
 
 /* ── 사이드바 오버레이 ── */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;backdrop-filter:blur(2px);}
 .sb-overlay.on{display:block;}
 
 /* ── iOS input 자동줌 방지 ── */
-@media(max-width:768px){
-  input, select, textarea { font-size:16px !important; }
-  .lbtn{padding:15px;font-size:1rem;}
-  .nopt{padding:13px 14px;}
-  /* 로그인 화면 여백 */
-  #login-wrap{padding:16px;}
-  .lcard{width:100%;max-width:100%;}
-}
+
   :root{--sw:280px;}
 
   /* 햄버거 표시 */
@@ -356,13 +343,16 @@ tbody tr:last-child td{border-bottom:none;}
   .yrnum{font-size:.68rem;min-width:55px;}
 }
 
-@media(max-width:400px){
-  :root{--sw:260px;}
-  .stats{grid-template-columns:1fr 1fr;}
-  .scv{font-size:1.15rem;}
-  .tbl .pt{font-size:.82rem;}
-  .content{padding:10px 8px;}
-  .btn{padding:9px 12px;font-size:.82rem;}
+
+
+/* ── PC 와이드 스크린 최적화 ── */
+@media(min-width:1400px){
+  .stats{grid-template-columns:repeat(6,1fr);}
+  .dg{gap:24px;}
+  .content{padding:32px 48px;}
+}
+@media(min-width:1200px){
+  .stats{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
 }
 </style>
 </head>
@@ -432,17 +422,17 @@ tbody tr:last-child td{border-bottom:none;}
   </nav>
   <div class="sbfoot">
     <div class="sfbtn" id="btn-chpw">&#128273; 비밀번호 변경</div>
-    <div class="sfbtn" id="btn-reset-data" style="margin-top:6px;display:none;color:#ef4444;">&#128465; 테스트 데이터 초기화</div>
     <div class="sfbtn" id="btn-logout" style="margin-top:6px;">&#128682; 로그아웃</div>
+    <div style="margin-top:14px;font-size:.65rem;color:rgba(255,255,255,.2);line-height:1.6;">
+      근태관리 시스템 PC<br>Google Sheets 연동
+    </div>
   </div>
 </aside>
 
-<div class="sb-overlay" id="sb-overlay"></div>
 
 <div class="main">
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:10px;">
-      <button class="hbg" id="btn-hbg"><span></span><span></span><span></span></button>
       <div class="tbl"><div class="bc" id="tbc">연차유급휴가</div><div class="pt" id="tpt">대시보드</div></div>
     </div>
     <div class="tbr">
@@ -735,138 +725,6 @@ tbody tr:last-child td{border-bottom:none;}
 <!-- Toast -->
 <div id="twrap"></div>
 
-<!-- Modal: 데이터 초기화 -->
-<div class="mob" id="mo-reset">
-  <div class="mo" style="max-width:560px;">
-    <div class="moh"><div class="mot" style="color:var(--acc4);">&#128465; 데이터 초기화</div><button class="mox" data-close="mo-reset">&#10005;</button></div>
-    <div class="mob2">
-      <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:.83rem;color:var(--txt2);line-height:1.8;">
-        <strong style="color:var(--acc4);">&#9888;&#65039; 되돌릴 수 없습니다.</strong> 선택 범위의 데이터가 <strong>영구 삭제</strong>됩니다.
-      </div>
-
-      <!-- ── 휴가 신청내역 ── -->
-      <div style="border:1.5px solid var(--bdr);border-radius:10px;margin-bottom:10px;overflow:hidden;">
-        <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--surf2);">
-          <input type="checkbox" id="chk-lv" style="width:16px;height:16px;accent-color:var(--acc4);">
-          <div>
-            <div style="font-weight:700;font-size:.88rem;">&#127958; 휴가 신청내역</div>
-            <div style="font-size:.74rem;color:var(--txt3);">직원별 사용일수도 함께 초기화</div>
-          </div>
-        </label>
-        <div id="rst-lv-range" style="display:none;padding:10px 14px;border-top:1px solid var(--bdr);background:#fff;">
-          <div style="font-size:.76rem;font-weight:600;color:var(--txt2);margin-bottom:8px;">삭제 범위</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="lv-range" value="all" id="lv-range-all" checked style="accent-color:var(--acc4);"> 전체
-            </label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="lv-range" value="year" id="lv-range-year" style="accent-color:var(--acc4);"> 특정 연도
-            </label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="lv-range" value="month" id="lv-range-month" style="accent-color:var(--acc4);"> 특정 월
-            </label>
-          </div>
-          <div id="lv-yr-wrap" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-            <select class="fc" id="rst-lv-yr" style="width:96px;font-size:.83rem;padding:6px 10px;"></select>
-            <select class="fc" id="rst-lv-mo" style="width:80px;font-size:.83rem;padding:6px 10px;display:none;"></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── 초과근무 신청내역 ── -->
-      <div style="border:1.5px solid var(--bdr);border-radius:10px;margin-bottom:10px;overflow:hidden;">
-        <label style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--surf2);">
-          <input type="checkbox" id="chk-ot" style="width:16px;height:16px;accent-color:var(--acc4);">
-          <div>
-            <div style="font-weight:700;font-size:.88rem;">&#9200; 초과근무 신청내역</div>
-            <div style="font-size:.74rem;color:var(--txt3);">인정시간 포함 초과근무 기록 삭제</div>
-          </div>
-        </label>
-        <div id="rst-ot-range" style="display:none;padding:10px 14px;border-top:1px solid var(--bdr);background:#fff;">
-          <div style="font-size:.76rem;font-weight:600;color:var(--txt2);margin-bottom:8px;">삭제 범위</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="ot-range" value="all" id="ot-range-all" checked style="accent-color:var(--acc4);"> 전체
-            </label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="ot-range" value="year" id="ot-range-year" style="accent-color:var(--acc4);"> 특정 연도
-            </label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:.82rem;cursor:pointer;">
-              <input type="radio" name="ot-range" value="month" id="ot-range-month" style="accent-color:var(--acc4);"> 특정 월
-            </label>
-          </div>
-          <div id="ot-yr-wrap" style="display:none;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-            <select class="fc" id="rst-ot-yr" style="width:96px;font-size:.83rem;padding:6px 10px;"></select>
-            <select class="fc" id="rst-ot-mo" style="width:80px;font-size:.83rem;padding:6px 10px;display:none;"></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── 기타 옵션 ── -->
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--bdr);border-radius:9px;cursor:pointer;">
-          <input type="checkbox" id="chk-nt" style="width:16px;height:16px;accent-color:var(--acc4);">
-          <div>
-            <div style="font-weight:600;font-size:.86rem;">&#128276; 알림 내역 삭제</div>
-            <div style="font-size:.73rem;color:var(--txt3);">모든 알림 메시지 초기화</div>
-          </div>
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--bdr);border-radius:9px;cursor:pointer;">
-          <input type="checkbox" id="chk-pw" style="width:16px;height:16px;accent-color:var(--acc4);">
-          <div>
-            <div style="font-weight:600;font-size:.86rem;">&#128273; 전 직원 비밀번호 → 1234</div>
-            <div style="font-size:.73rem;color:var(--txt3);">모든 직원 비밀번호 초기화</div>
-          </div>
-        </label>
-        <label style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid #fecaca;border-radius:9px;cursor:pointer;background:#fff5f5;">
-          <input type="checkbox" id="chk-all" style="width:16px;height:16px;accent-color:var(--acc4);">
-          <div>
-            <div style="font-weight:700;font-size:.86rem;color:var(--acc4);">&#128465; 전체 완전 초기화 (직원 포함)</div>
-            <div style="font-size:.73rem;color:var(--txt3);">위 전부 + 직원 목록 기본값 복원 + 자동 로그아웃</div>
-          </div>
-        </label>
-      </div>
-
-      <div style="font-size:.82rem;font-weight:700;color:var(--txt2);margin-bottom:6px;">확인 문구 입력</div>
-      <input type="text" class="fc" id="rst-confirm-txt" placeholder="&quot;초기화&quot; 라고 입력하세요" autocomplete="off">
-      <div style="font-size:.73rem;color:var(--txt3);margin-top:4px;">실수 방지를 위해 확인 문구 입력 필수</div>
-    </div>
-    <div class="mof">
-      <button class="btn bs" data-close="mo-reset">취소</button>
-      <button class="btn bng" id="btn-reset-ok" style="opacity:.5;" disabled>&#128465; 초기화 실행</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: 초과근무 설정 (관리자) -->
-<div class="mob" id="mo-otset">
-  <div class="mo mosm">
-    <div class="moh"><div class="mot">&#9881; 초과근무 설정</div><button class="mox" data-close="mo-otset">&#10005;</button></div>
-    <div class="mob2">
-      <div class="guide" style="margin-bottom:16px;">
-        <h4>&#128161; 설정 안내</h4>
-        <ul>
-          <li>월 최대 인정 시간은 전체 직원에게 동일하게 적용됩니다.</li>
-          <li>개인별 수당 단가는 <strong>직원 관리 → 수정</strong>에서 각각 입력하세요.</li>
-          <li>수당 예상액 = min(인정시간, 최대시간) × 개인 단가</li>
-        </ul>
-      </div>
-      <div class="fg">
-        <label class="fl">월 최대 인정 시간 <span class="rq">*</span></label>
-        <div style="position:relative;">
-          <input type="number" class="fc" id="ots-max" placeholder="10" min="1" max="100" step="1" style="padding-right:32px;">
-          <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--txt3);pointer-events:none;">시간</span>
-        </div>
-        <div class="fh">기본값: 10시간. 초과분은 수당 계산에서 제외됩니다.</div>
-      </div>
-      <div id="ots-preview" style="background:linear-gradient(135deg,#f0f4ff,#e8f4ff);border:1px solid #c7d7ff;border-radius:10px;padding:13px 16px;margin-top:4px;">
-        <div style="font-size:.74rem;font-weight:700;color:var(--acc);margin-bottom:6px;">&#128204; 현재 설정</div>
-        <div style="font-size:.78rem;color:var(--txt2);">월 최대 인정 시간<br><strong id="ots-prev-max" style="font-family:'DM Mono',monospace;color:var(--txt);font-size:1.1rem;">10시간</strong></div>
-      </div>
-    </div>
-    <div class="mof"><button class="btn bs" data-close="mo-otset">취소</button><button class="btn bp" id="btn-otset-ok">&#128190; 저장</button></div>
-  </div>
-</div>
 
 <!-- Modal: 반려 사유 -->
 <div class="mob" id="mo-rej">
@@ -969,6 +827,9 @@ tbody tr:last-child td{border-bottom:none;}
 </div>
 
 <script>
+/* PC: 사이드바 항상 고정 */
+function toggleSB(){}
+function closeSB(){}
 document.addEventListener('DOMContentLoaded', function() {
 'use strict';
 
@@ -986,7 +847,7 @@ var emps = [
 ];
 
 var leaves=[], otList=[], notifs=[];
-var lidx=1, oidx=1, nidx=1;
+var nidx=1;
 var CU=null, calY, calM, rejTgt=null, rejType=null, editId=null;
 
 /* ── 초과근무 설정 (관리자 입력) ── */
@@ -996,7 +857,7 @@ var otSettings = {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   ▼▼▼ Google Apps Script URL 설정 — 배포 후 이 URL을 교체하세요 ▼▼▼
+   ▼▼▼ Google Apps Script URL 설정 (모바일과 동일한 URL 사용) ▼▼▼
    ═══════════════════════════════════════════════════════════════ */
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzD7RgvtJkt_xKmSaWoxw6Wgy0yCYGhmlQIvWzTUrrh1eafZt5G1S6uzMbCmjSx9z3X/exec';
 
@@ -1014,7 +875,7 @@ function _gasPost(action, body) {
   }).then(function(r){return r.json();});
 }
 
-/* GET 래퍼들 — Flask apiGet/apiPost 인터페이스 호환 */
+/* GET 래퍼들 — GAS 액션 매핑 */
 function apiGet(path) {
   // /api/users → getUsers
   // /api/leaves?user_id=X → getLeaves
@@ -1036,12 +897,6 @@ function apiGet(path) {
   return _gasGet(qp);
 }
 function apiPost(path, body) {
-  // /api/login → login
-  // /api/leaves → addLeave
-  // /api/leaves/5/approve → approveLeave (id in body)
-  // /api/ot/5/approve → approveOT
-  // /api/users → addUser
-  // /api/notifications → addNotification
   var route = path.replace('/api/','');
   var action;
   if (route === 'login')               action = 'login';
@@ -1075,7 +930,7 @@ function apiDel(path) {
 }
 
 function dbUserToEmp(u){
-  /* Flask users 레코드를 모바일 emps 포맷으로 변환 */
+
   var roleMap = {'admin':'admin','user':'employee'};
   return {
     id: String(u.id),        // 모바일은 string id 사용
@@ -1093,8 +948,8 @@ function dbUserToEmp(u){
 }
 
 function dbLeaveToLocal(r){
-  /* Flask leave_requests 레코드를 모바일 leaves 포맷으로 변환 */
-  /* 상태값 통일: Flask '대기중' → 모바일 '대기' */
+  
+  /* 상태값 통일: GAS '대기중' → 로컬 '대기' */
   var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
   return {
     id: r.id,
@@ -1114,7 +969,7 @@ function dbLeaveToLocal(r){
 }
 
 function dbOtToLocal(r){
-  /* Flask ot_requests 레코드를 모바일 otList 포맷으로 변환 */
+  
   var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
   return {
     id: r.id,
@@ -1144,15 +999,15 @@ function saveData(){
     localStorage.setItem('guntae_nidx',   String(nidx));
     localStorage.setItem('guntae_otset',  JSON.stringify(otSettings));
   }catch(e){}
-  /* ※ 실제 저장은 각 액션(신청/승인/반려/추가/수정)에서 apiPost/apiPut 으로 개별 처리 */
+  /* ※ 실제 저장은 각 액션에서 GAS API 호출로 개별 처리됩니다 */
 }
 
-/* ── loadData: Flask API 에서 전체 데이터 로드 ── */
+/* ── loadData: Google Sheets 에서 전체 데이터 로드 ── */
 function loadData(){
   /* 1) 로컬 캐시 즉시 복원 (화면 깜빡임 방지) */
   _loadFromLocal();
 
-  /* 2) Flask API 에서 최신 데이터 비동기 로드 */
+  /* 2) Google Sheets 에서 최신 데이터 비동기 로드 */
   Promise.all([
     apiGet('/api/users'),
     apiGet('/api/leaves'),
@@ -1184,7 +1039,7 @@ function loadData(){
       renderDash(); updND(); renderNI();
     }
   }).catch(function(err){
-    console.warn('Flask API 로드 실패 — 로컬 캐시 사용:', err);
+    console.warn('GAS 로드 실패 — 로컬 캐시 사용:', err);
     toast('서버 연결 실패. 로컬 캐시로 표시합니다. (GAS_URL: '+GAS_URL+')', 'wt');
   });
 }
@@ -1323,7 +1178,7 @@ function doLogin(){
   if(!nm){ loginErr('이름을 입력해 주세요.'); return; }
   if(!pw){ loginErr('비밀번호를 입력해 주세요.'); return; }
 
-  /* Flask API 로그인 */
+  /* GAS 로그인 */
   var btn=g('btn-login');
   btn.disabled=true; btn.textContent='로그인 중...';
 
@@ -1365,247 +1220,6 @@ g('inp-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin
 function doLogout(){ CU=null; g('login-wrap').style.display='flex'; g('app').style.display='none'; g('inp-name').value=''; g('inp-pw').value=''; g('lerr').textContent=''; }
 g('btn-logout').addEventListener('click', doLogout);
 
-/* ── 테스트 데이터 초기화 ── */
-var DEFAULT_EMPS = [
-  {id:'jang', name:'\uc7a5\uc138\uc9c4', join:'2020-03-02', role:'employee', total:15, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'yoo',  name:'\uc720\uc81c\uc131', join:'2018-07-01', role:'admin',    total:20, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'oh',   name:'\uc624\uacbd\uc9c0', join:'2021-01-04', role:'approver', total:15, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'cho',  name:'\uc870\uc2e0\ub155', join:'2022-05-09', role:'employee', total:15, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'ohse', name:'\uc624\uc138\ud76c', join:'2023-03-13', role:'employee', total:15, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'jung', name:'\uc815\ud558\ube48', join:'2019-11-11', role:'employee', total:18, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0},
-  {id:'kim',  name:'\uae40\uc11c\uc778', join:'2024-01-08', role:'employee', total:12, usedD:0, usedH:0, pw:'1234', ccTotal:3, ccUsed:0, slTotal:60, slUsed:0}
-];
-
-// 관리자만 초기화 버튼 표시
-function updateResetBtn(){
-  var btn=g('btn-reset-data');
-  if(btn) btn.style.display=(CU&&CU.role==='admin')?'':'none';
-}
-
-// 체크박스 - 전체초기화 선택 시 나머지 자동 체크
-/* ── 초기화 모달 ── */
-function initResetSelects(){
-  var now=new Date(), yr=now.getFullYear();
-  var yrs=[yr-2,yr-1,yr,yr+1];
-  var yopts=yrs.map(function(y){return '<option value="'+y+'"'+(y===yr?' selected':'')+'>'+y+'년</option>';}).join('');
-  var mopts=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
-    .map(function(m,i){return '<option value="'+i+'"'+(i===now.getMonth()?' selected':'')+'>'+m+'</option>';}).join('');
-  ['rst-lv-yr','rst-ot-yr'].forEach(function(id){ var el=g(id); if(el) el.innerHTML=yopts; });
-  ['rst-lv-mo','rst-ot-mo'].forEach(function(id){ var el=g(id); if(el) el.innerHTML=mopts; });
-}
-
-// 체크박스 - 범위 패널 토글
-g('chk-lv').addEventListener('change', function(){
-  g('rst-lv-range').style.display=this.checked?'block':'none';
-  checkResetReady();
-});
-g('chk-ot').addEventListener('change', function(){
-  g('rst-ot-range').style.display=this.checked?'block':'none';
-  checkResetReady();
-});
-
-// 라디오 - 년/월 select 표시 제어
-function bindRangeRadio(name, wrId, moId){
-  document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){
-    r.addEventListener('change', function(){
-      var v=this.value;
-      var wr=g(wrId), mo=g(moId);
-      wr.style.display=(v==='year'||v==='month')?'flex':'none';
-      mo.style.display=(v==='month')?'':'none';
-    });
-  });
-}
-bindRangeRadio('lv-range','lv-yr-wrap','rst-lv-mo');
-bindRangeRadio('ot-range','ot-yr-wrap','rst-ot-mo');
-
-// 전체 초기화 체크 시 하위 자동 체크
-g('chk-all').addEventListener('change', function(){
-  var v=this.checked;
-  ['chk-lv','chk-ot','chk-nt','chk-pw'].forEach(function(id){ g(id).checked=v; });
-  g('rst-lv-range').style.display=v?'block':'none';
-  g('rst-ot-range').style.display=v?'block':'none';
-  checkResetReady();
-});
-
-['chk-nt','chk-pw'].forEach(function(id){
-  g(id).addEventListener('change', checkResetReady);
-});
-g('rst-confirm-txt').addEventListener('input', checkResetReady);
-
-function checkResetReady(){
-  var anyChecked=['chk-lv','chk-ot','chk-nt','chk-pw','chk-all'].some(function(id){ return g(id).checked; });
-  var txt=g('rst-confirm-txt').value.trim();
-  var ok=anyChecked && txt==='초기화';
-  var btn=g('btn-reset-ok');
-  btn.disabled=!ok;
-  btn.style.opacity=ok?'1':'0.5';
-}
-
-g('btn-reset-data').addEventListener('click', function(){
-  ['chk-lv','chk-ot','chk-nt','chk-pw','chk-all'].forEach(function(id){ g(id).checked=false; });
-  g('rst-lv-range').style.display='none';
-  g('rst-ot-range').style.display='none';
-  document.querySelectorAll('input[name="lv-range"]')[0].checked=true;
-  document.querySelectorAll('input[name="ot-range"]')[0].checked=true;
-  g('lv-yr-wrap').style.display='none';
-  g('ot-yr-wrap').style.display='none';
-  g('rst-lv-mo').style.display='none';
-  g('rst-ot-mo').style.display='none';
-  g('rst-confirm-txt').value='';
-  initResetSelects();
-  checkResetReady();
-  openM('mo-reset');
-  if(window.innerWidth<=768) closeSB();
-});
-
-g('btn-reset-ok').addEventListener('click', function(){
-  if(g('rst-confirm-txt').value.trim()!=='초기화') return;
-  var doLv=g('chk-lv').checked, doOt=g('chk-ot').checked,
-      doNt=g('chk-nt').checked, doPw=g('chk-pw').checked, doAll=g('chk-all').checked;
-  var msgs=[];
-
-  function getRange(prefix){
-    var r=document.querySelector('input[name="'+prefix+'-range"]:checked');
-    var v=r?r.value:'all';
-    var yr=parseInt(g('rst-'+prefix+'-yr').value);
-    var mo=parseInt(g('rst-'+prefix+'-mo').value);
-    return {mode:v, yr:yr, mo:mo};
-  }
-  function matchRange(dateStr, range){
-    var dt=new Date(dateStr);
-    if(range.mode==='all') return true;
-    if(range.mode==='year') return dt.getFullYear()===range.yr;
-    if(range.mode==='month') return dt.getFullYear()===range.yr && dt.getMonth()===range.mo;
-    return false;
-  }
-  function rangeLabel(range){
-    if(range.mode==='all') return '전체';
-    if(range.mode==='year') return range.yr+'년';
-    var mos=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-    return range.yr+'년 '+mos[range.mo];
-  }
-
-  if(doAll){
-    emps=JSON.parse(JSON.stringify(DEFAULT_EMPS));
-    leaves=[]; otList=[]; notifs=[];
-    lidx=1; oidx=1; nidx=1;
-    msgs.push('전체 완전 초기화 완료 (직원 기본값 복원)');
-    try{['guntae_emps','guntae_leaves','guntae_ot','guntae_lidx','guntae_oidx','guntae_notifs','guntae_nidx'].forEach(function(k){localStorage.removeItem(k);});}catch(e){}
-  } else {
-    if(doLv){
-      var lvRange=getRange('lv');
-      if(lvRange.mode==='all'){
-        leaves=[]; lidx=1;
-        emps.forEach(function(e){ e.usedD=0; e.usedH=0; e.ccUsed=0; e.slUsed=0; });
-        msgs.push('휴가 신청내역 전체 삭제 및 사용일수 초기화');
-      } else {
-        // 범위 내 건만 삭제, 나머지 유지
-        var removed=leaves.filter(function(r){ return matchRange(r.sd, lvRange); });
-        leaves=leaves.filter(function(r){ return !matchRange(r.sd, lvRange); });
-        // 삭제된 승인 건의 사용일수 재계산
-        emps.forEach(function(emp){
-          var annTypes=['연가','오전반가','오후반가','외출','조퇴'];
-          removed.filter(function(r){return r.empId===emp.id&&r.status==='승인';}).forEach(function(r){
-            if(annTypes.indexOf(r.type)>-1){ emp.usedD=Math.max(0,emp.usedD-(r.wd||0)); emp.usedH=Math.max(0,emp.usedH-(r.wh||0)); }
-            else if(r.type==='자녀돌봄'){ emp.ccUsed=Math.max(0,(emp.ccUsed||0)-(r.wd||0)); }
-            else if(r.type==='병가'){ emp.slUsed=Math.max(0,(emp.slUsed||0)-(r.wd||0)); }
-          });
-        });
-        msgs.push('휴가 신청내역 삭제: '+rangeLabel(lvRange)+' ('+removed.length+'건)');
-      }
-    }
-    if(doOt){
-      var otRange=getRange('ot');
-      if(otRange.mode==='all'){
-        otList=[]; oidx=1;
-        msgs.push('초과근무 신청내역 전체 삭제');
-      } else {
-        var removedOt=otList.filter(function(r){ return matchRange(r.dt, otRange); });
-        otList=otList.filter(function(r){ return !matchRange(r.dt, otRange); });
-        msgs.push('초과근무 삭제: '+rangeLabel(otRange)+' ('+removedOt.length+'건)');
-      }
-    }
-    if(doNt){ notifs=[]; nidx=1; msgs.push('알림 내역 삭제'); }
-    if(doPw){ emps.forEach(function(e){ e.pw='1234'; }); if(CU) CU.pw='1234'; msgs.push('전 직원 비밀번호 → 1234'); }
-  }
-
-  saveData();
-  closeM('mo-reset');
-  toast('✅ '+msgs.join(' / '), 'ok');
-
-  renderDash(); renderNI(); updND();
-  if(typeof renderEmpTbl==='function') renderEmpTbl();
-  if(typeof renderAL==='function') renderAL();
-  if(typeof renderAO==='function') renderAO();
-  updPend();
-  if(doAll){ setTimeout(doLogout, 1500); }
-});
-
-/* ── 모바일 사이드바 ── */
-var sbEl=g('sb'), ovEl=g('sb-overlay'), hbgEl=g('btn-hbg');
-function openSB(){
-  sbEl.classList.add('open');
-  ovEl.classList.add('on');
-  hbgEl.classList.add('on');
-  document.body.style.overflow='hidden'; // 뒤 스크롤 막기
-}
-function closeSB(){
-  sbEl.classList.remove('open');
-  ovEl.classList.remove('on');
-  hbgEl.classList.remove('on');
-  document.body.style.overflow='';
-}
-hbgEl.addEventListener('click', function(e){
-  e.stopPropagation();
-  sbEl.classList.contains('open') ? closeSB() : openSB();
-});
-ovEl.addEventListener('click', closeSB);
-// 메뉴 항목 클릭 시 모바일에서 자동으로 사이드바 닫기
-document.querySelectorAll('.sbi').forEach(function(it){
-  it.addEventListener('click', function(){
-    if(window.innerWidth <= 768) closeSB();
-  });
-});
-// 스와이프로 사이드바 닫기
-(function(){
-  var startX=0, startY=0;
-  sbEl.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
-  sbEl.addEventListener('touchend',function(e){
-    var dx=e.changedTouches[0].clientX-startX;
-    var dy=Math.abs(e.changedTouches[0].clientY-startY);
-    if(dx < -50 && dy < 60) closeSB();
-  });
-  // 오른쪽 엣지 스와이프로 사이드바 열기
-  document.addEventListener('touchstart',function(e){startX=e.touches[0].clientX;startY=e.touches[0].clientY;},{passive:true});
-  document.addEventListener('touchend',function(e){
-    var dx=e.changedTouches[0].clientX-startX;
-    var dy=Math.abs(e.changedTouches[0].clientY-startY);
-    if(startX<20 && dx>50 && dy<60 && window.innerWidth<=768) openSB();
-  });
-})();
-
-/* ── CHANGE PW ── */
-g('btn-chpw').addEventListener('click', function(){ g('cpw-cur').value=''; g('cpw-new').value=''; g('cpw-cf').value=''; g('cpw-err').textContent=''; openM('mo-cpw'); });
-g('btn-cpwok').addEventListener('click', function(){
-  var cur=g('cpw-cur').value, nw=g('cpw-new').value, cf=g('cpw-cf').value, erl=g('cpw-err');
-  erl.textContent='';
-  if(!cur){ erl.textContent='현재 비밀번호를 입력해 주세요.'; return; }
-  if(nw.length<4){ erl.textContent='새 비밀번호는 4자 이상이어야 합니다.'; return; }
-  if(nw!==cf){ erl.textContent='새 비밀번호와 확인이 다릅니다.'; return; }
-  if(cur===nw){ erl.textContent='새 비밀번호가 현재와 동일합니다.'; return; }
-  /* 먼저 현재 비밀번호 서버 검증 후 변경 */
-  apiPost('/api/login',{name:CU.name,password:cur})
-    .then(function(chk){
-      if(!chk.ok){ erl.textContent='현재 비밀번호가 틀렸습니다.'; return; }
-      return apiPut('/api/users/'+CU.dbId,{password:nw});
-    })
-    .then(function(res){
-      if(!res||!res.ok){ erl.textContent=(res&&res.error)||'변경 실패'; return; }
-      closeM('mo-cpw');
-      toast('비밀번호가 변경되었습니다.','ok');
-    })
-    .catch(function(){ erl.textContent='서버 연결 오류'; });
-});
 
 /* ── NAVIGATION ── */
 var PMETA={
@@ -1785,7 +1399,7 @@ g('btn-la').addEventListener('click', function(){
   var dts=['연가','오전반가','오후반가','외출','조퇴'];
   if(dts.indexOf(t)>-1 && need>ri.r8){ toast('잔여 연차가 부족합니다.','er'); return; }
 
-  /* Flask API 로 휴가 신청 전송 */
+  /* GAS 로 휴가 신청 전송 */
   var btn=g('btn-la'); btn.disabled=true; btn.textContent='신청 중...';
   apiPost('/api/leaves',{user_id:CU.dbId,start_date:sd,end_date:ed,leave_type:t,reason:rsn,days:wd})
     .then(function(res){
@@ -2162,7 +1776,7 @@ g('btn-ot').addEventListener('click',function(){
   if(dupOT.length){ toast('해당 시간대에 이미 신청된 초과근무가 있습니다. ('+dupOT[0].start+'~'+dupOT[0].end+')','er'); return; }
   var hours=eh-sh;
 
-  /* Flask API 로 OT 신청 전송 */
+  /* GAS 로 OT 신청 전송 */
   var btn=g('btn-ot'); btn.disabled=true;
   apiPost('/api/ot',{user_id:CU.dbId,work_date:dt,start_time:s,end_time:e,hours:hours,description:desc})
     .then(function(res){
