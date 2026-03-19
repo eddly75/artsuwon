@@ -456,7 +456,7 @@ tbody tr:last-child td{border-bottom:none;}
     <div class="ltip">
       <strong>&#128204; 사용 안내</strong><br>
       &bull; 이름 입력 후 비밀번호를 입력하세요<br>
-      &bull; 초기 비밀번호: <strong>영문+숫자 4자리 이상</strong> (예: <strong>pass1234</strong>)<br>
+      &bull; 초기 비밀번호 <strong>1234</strong> (권장 영문+숫자 / 예시 <strong>pass1234</strong>)<br>
       &bull; 로그인 후 사이드바 하단에서 비밀번호 변경 가능
     </div>
   </div>
@@ -1314,7 +1314,7 @@ var otSettings = {
    ═══════════════════════════════════════════════════════════════ */
 
 /* 로컬 테스트 모드 — USE_LOCAL_MODE = true 시 GAS 없이 동작 */
-var USE_LOCAL_MODE = true;
+var USE_LOCAL_MODE = false;
 
 /* 로컬 테스트용 초기 데이터 (localStorage에서 복원, 없으면 기본값 사용) */
 var _LS_KEY = 'guntae_local_test_v2_';
@@ -1333,8 +1333,8 @@ function _lsSave() {
         role:({'admin':'admin','user':'employee','approver':'approver','master':'master'})[u.role]||u.role,
         dept:u.dept||'',
         total:parseFloat(u.total_leaves)||0,usedD:parseFloat(u.used_leaves)||0,usedH:0,pw:'',
-        ccTotal:parseInt(u.cc_total)||3,ccUsed:parseFloat(u.cc_used)||0,
-        slTotal:parseInt(u.sl_total)||60,slUsed:parseFloat(u.sl_used)||0,
+        ccTotal:(u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,ccUsed:parseFloat(u.cc_used)||0,
+        slTotal:(u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,slUsed:parseFloat(u.sl_used)||0,
         otRate:parseInt(u.ot_rate)||0,otMaxHours:parseInt(u.ot_max_hours)||10};
     });
     localStorage.setItem('guntae_emps', JSON.stringify(sanitized));
@@ -1476,7 +1476,8 @@ function _localRoute(action, body) {
 
     /* 휴가 삭제(취소) */
     case 'deleteLeave': {
-      LOCAL_LEAVES = LOCAL_LEAVES.filter(function(x){ return String(x.id)!==String(body.id); });
+      var dl = LOCAL_LEAVES.find(function(x){ return String(x.id)===String(body.id); });
+      if(dl){ dl.status = '취소완료'; dl.approved_at = now; }
       _lsSave();
       return {ok:true};
     }
@@ -1588,16 +1589,16 @@ function _localSanitize(u) {
     join_date: u.join_date ? String(u.join_date).slice(0,10) : '',
     total_leaves: parseFloat(u.total_leaves)||0,
     used_leaves:  parseFloat(u.used_leaves)||0,
-    cc_total:  parseInt(u.cc_total)||3,
+    cc_total:  (u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,
     cc_used:   parseFloat(u.cc_used)||0,
-    sl_total:  parseInt(u.sl_total)||60,
+    sl_total:  (u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,
     sl_used:   parseFloat(u.sl_used)||0,
     ot_rate:   parseInt(u.ot_rate)||0,
     ot_max_hours: parseInt(u.ot_max_hours)||10
   };
 }
 
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbyj-2pwZCvFfmQq6jCnq33f4QJMxT7nPqP_VrnbcXNKS4ATyyYLizRagxbDCKi513q7/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwPlHAiCkP3KKZf3vvWjUztpTlDSzsqNrLPisbtcJeJnLtyqYiI_LTc1PBeGJwdFXnh/exec';
 
 /* ── API 헬퍼 (GAS 기반) ── */
 function _gasGet(params) {
@@ -1686,9 +1687,9 @@ function dbUserToEmp(u){
     usedD: parseFloat(u.used_leaves)||0,
     usedH: 0,
     pw:    '',
-    ccTotal:    parseInt(u.cc_total)||3,
+    ccTotal:    (u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,
     ccUsed:     parseFloat(u.cc_used)||0,
-    slTotal:    parseInt(u.sl_total)||60,
+    slTotal:    (u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,
     slUsed:     parseFloat(u.sl_used)||0,
     otRate:     parseInt(u.ot_rate)||0,
     otMaxHours: parseInt(u.ot_max_hours)||10
@@ -1698,7 +1699,7 @@ function dbUserToEmp(u){
 function dbLeaveToLocal(r){
   
   /* 상태값 통일: GAS '대기중' → 로컬 '대기' */
-  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
+  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려','취소완료':'취소완료'};
   return {
     id: r.id,
     empId: String(r.user_id),
@@ -1720,7 +1721,7 @@ function dbLeaveToLocal(r){
 
 function dbOtToLocal(r){
   
-  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
+  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려','취소완료':'취소완료'};
   return {
     id: r.id,
     empId: String(r.user_id),
@@ -1923,19 +1924,20 @@ function addNotif(toId, title, msg, link){
 function updND(){
   if(!CU) return;
   /* 읽지 않은 알림 dot */
-  var u=notifs.filter(function(n){return n.to===CU.id&&!n.read;}).length;
+  var u=notifs.filter(function(n){return String(n.to)===String(CU.id)&&!n.read;}).length;
   var ndEl=g('nd'); if(ndEl) ndEl.style.display=u?'':'none';
   /* 승인 대기 숫자 뱃지 — 관리자/승인자에게만 표시 */
   var pendEl=g('nd-pend');
   if(pendEl){
-    if(CU.role==='admin'||CU.role==='approver'){
-      var cnt=leaves.filter(function(r){return r.status==='\ub300\uae30';}).length
-             +otList.filter(function(r){return r.status==='\ub300\uae30';}).length;
+    if(CU.role==='admin'||CU.role==='master'||CU.role==='approver'){
+      var pendLeaves=filterByDept(leaves.filter(function(r){return r.status==='\ub300\uae30';}));
+      var pendOT=filterByDept(otList.filter(function(r){return r.status==='\ub300\uae30';}));
+      var cnt=pendLeaves.length+pendOT.length;
       if(cnt>0){
         pendEl.textContent=cnt>99?'99+':String(cnt);
         pendEl.style.display='inline-flex';
-        /* 알림 dot는 숨김 (뱃지로 대체) */
-        if(ndEl) ndEl.style.display='none';
+        /* 읽지 않은 알림도 있으면 dot 표시 유지 */
+        if(u===0 && ndEl) ndEl.style.display='none';
       } else {
         pendEl.style.display='none';
       }
@@ -2672,7 +2674,7 @@ function calcLeave(){
     var ccU=leaves.filter(function(r){return r.empId===CU.id&&r.type===CC_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     g('la-bef').textContent=(ccT-ccU)+'\uc77c / '+ccT+'\uc77c (\uc790\ub140\ub3cc\ubd4c)';
   } else if(poolType==='sl'){
-    var slT=(CU.slTotal!==undefined&&CU.slTotal!==null)?CU.slTotal:60;
+    var slT=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
     var slU=leaves.filter(function(r){return r.empId===CU.id&&r.type===SL_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     g('la-bef').textContent=(slT-slU)+'\uc77c / '+slT+'\uc77c (\ubcd1\uac00)';
   } else if(poolType==='none'){
@@ -2709,7 +2711,7 @@ function calcLeave(){
     if(ccAfter<0) g('la-aft').innerHTML='<span style="color:var(--acc4)">\uc790\ub140\ub3cc\ubd04 \uc794\uc5ec \ubd80\uc871!</span>';
     else g('la-aft').textContent=ccAfter+'\uc77c \ub0a8\uc74c';
   } else if(poolType==='sl'){
-    var slT2=(CU.slTotal!==undefined&&CU.slTotal!==null)?CU.slTotal:60;
+    var slT2=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
     var slU2=leaves.filter(function(r){return r.empId===CU.id&&r.type===SL_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     var slAfter=slT2-slU2-wd;
     if(slAfter<0) g('la-aft').innerHTML='<span style="color:var(--acc4)">\ubcd1\uac00 \uc794\uc5ec \ubd80\uc871!</span>';
@@ -2758,6 +2760,18 @@ g('btn-la').addEventListener('click', function(){
   var ri=remInfo(CU), need=wd*8+wh;
   var dts=['연가','오전반가','오후반가','외출','조퇴'];
   if(dts.indexOf(t)>-1 && need>ri.r8){ toast('잔여 연차가 부족합니다.','er'); return; }
+  /* 병가 잔여 체크 */
+  if(t==='병가'){
+    var slTot=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
+    var slUsd=leaves.filter(function(r){return r.empId===CU.id&&r.type==='병가'&&r.status==='승인';}).reduce(function(a,r){return a+(r.wd||0);},0);
+    if(wd > slTot-slUsd){ toast('병가 잔여일수가 부족합니다. (잔여: '+(slTot-slUsd)+'일)','er'); return; }
+  }
+  /* 자녀돌봄 잔여 체크 */
+  if(t==='자녀돌봄'){
+    var ccTot=(CU.ccTotal!==null&&CU.ccTotal!==undefined)?CU.ccTotal:3;
+    var ccUsd=leaves.filter(function(r){return r.empId===CU.id&&r.type==='자녀돌봄'&&r.status==='승인';}).reduce(function(a,r){return a+(r.wd||0);},0);
+    if(wd > ccTot-ccUsd){ toast('자녀돌봄 잔여일수가 부족합니다. (잔여: '+(ccTot-ccUsd)+'일)','er'); return; }
+  }
 
   /* GAS 로 휴가 신청 전송 */
   var btn=g('btn-la'); btn.disabled=true; btn.textContent='신청 중...';
@@ -2830,7 +2844,7 @@ function renderCal(){
   var fd=new Date(calY,calM,1).getDay(), dim=new Date(calY,calM+1,0).getDate(), ts=todayS(), lm={}, otm={};
 
   // 휴가 맵
-  leaves.filter(function(r){return r.empId===CU.id&&r.status!=='\ubc18\ub824';}).forEach(function(r){
+  leaves.filter(function(r){return r.empId===CU.id&&r.status!=='\ubc18\ub824'&&r.status!=='\ucde8\uc18c\uc644\ub8cc';}).forEach(function(r){
     var d=new Date(r.sd), ed=new Date(r.ed||r.sd);
     while(d<=ed){
       if(d.getFullYear()===calY&&d.getMonth()===calM){
@@ -2894,7 +2908,7 @@ function renderHM(){
     var cancelBtn=r.status==='\ub300\uae30'
       ?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c \uc2e0\uccad</button>'
       :'';
-    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td style="font-size:.73rem;color:var(--txt2);">'+(r.apvAt?fmtD(r.apvAt):'-')+'</td><td>'+cancelBtn+'</td></tr>';
+    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td style="font-size:.73rem;color:var(--txt2);">'+(r.apvAt?fmtD(r.apvAt):'-')+'</td><td>'+cancelBtn+'</td></tr>';
   }).join('');
 }
 function renderHY(){
@@ -2904,7 +2918,7 @@ function renderHY(){
   if(!d.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--txt3)">\ud574\ub2f9 \uc5f0\ub3c4\uc758 \ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';return;}
   tb.innerHTML=d.map(function(r){
     var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?'<br><span style="font-size:.7rem;color:var(--acc);">'+r.st+'~'+r.et+'</span>':''));
-    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td></tr>';
+    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td></tr>';
   }).join('');
 }
 g('hm-yr').addEventListener('change',renderHM); g('hm-mo').addEventListener('change',renderHM);
@@ -2958,7 +2972,7 @@ g('btn-confirm-ok').addEventListener('click', function(){
       apiDel('/api/leaves/'+_cancelId)
         .then(function(res){
           if(!res.ok){ toast(res.error||'취소 실패','er'); return; }
-          leaves = leaves.filter(function(x){ return x.id !== _cancelId; });
+          r.status = '취소완료';
           saveData(); updPend();
           toast(r.type + ' 취소 완료되었습니다.', 'ok');
           renderHM(); renderHY();
@@ -3048,7 +3062,7 @@ function renderYY(){
   tb.innerHTML=all.map(function(r){
     var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?' '+r.st+'~'+r.et:''));
     var cancelBtn=r.status==='\ub300\uae30'?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c \uc2e0\uccad</button>':'';
-    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td>'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td>'+cancelBtn+'</td></tr>';
+    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td>'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td>'+cancelBtn+'</td></tr>';
   }).join('');
 }
 g('yy-yr').addEventListener('change',renderYY);
@@ -3345,7 +3359,8 @@ g('btn-otset-ok').addEventListener('click',function(){
 
 /* ── APPROVER ── */
 function updPend(){
-  var cnt=leaves.filter(function(r){return r.status==='\ub300\uae30';}).length+otList.filter(function(r){return r.status==='\ub300\uae30';}).length;
+  var cnt=filterByDept(leaves.filter(function(r){return r.status==='\ub300\uae30';})).length
+         +filterByDept(otList.filter(function(r){return r.status==='\ub300\uae30';})).length;
   var el2=g('pcnt'); if(el2){el2.textContent=cnt; el2.style.display=cnt?'':'none';}
   /* 관리자 메뉴의 승인대기 뱃지도 동기화 */
   var el3=g('pcnt-adm'); if(el3){el3.textContent=cnt; el3.style.display=cnt?'':'none';}
