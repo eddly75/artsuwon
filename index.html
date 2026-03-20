@@ -2045,7 +2045,14 @@ function doLogin(){
       /* ① 로컬 캐시로 즉시 화면 전환 */
       _loadFromLocal();
       var cached=emps.find(function(e){ return e.dbId===CU.dbId||e.name===CU.name; });
-      if(cached) CU=cached;
+      if(cached){
+        /* 로컬 캐시로 UI 정보 보완하되, 서버에서 받은 id/dbId는 반드시 유지 */
+        var serverDbId = CU.dbId;
+        var serverId   = CU.id;
+        CU = cached;
+        CU.dbId = serverDbId;
+        CU.id   = serverId;
+      }
       g('login-wrap').style.display='none';
       g('app').style.display='block';
       initApp();
