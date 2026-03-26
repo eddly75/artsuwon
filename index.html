@@ -1262,38 +1262,8 @@ tbody tr:last-child td{border-bottom:none;}
 document.addEventListener('DOMContentLoaded', function() {
 'use strict';
 
-/* ── 새로고침 후 자동 로그인 복원 ── */
-(function(){
-  try {
-    var scu = localStorage.getItem('guntae_cu');
-    if(scu){
-      var pcu = JSON.parse(scu);
-      if(pcu && pcu.id && pcu.name){
-        CU = pcu;
-        var se=localStorage.getItem('guntae_emps'); if(se){var pe=JSON.parse(se);if(pe.length)emps=pe;}
-        var sl=localStorage.getItem('guntae_leaves');if(sl)leaves=JSON.parse(sl);
-        var so=localStorage.getItem('guntae_ot');    if(so)otList=JSON.parse(so);
-        var sn=localStorage.getItem('guntae_notifs');if(sn)notifs=JSON.parse(sn);
-        g('login-wrap').style.display='none';
-        g('app').style.display='block';
-        initApp();
-        /* 백그라운드 데이터 갱신 */
-        Promise.all([apiGet('/api/users'),apiGet('/api/leaves'),apiGet('/api/ot')])
-          .then(function(results){
-            if(results[0].ok) emps = results[0].users.map(dbUserToEmp);
-            if(results[1].ok) leaves = results[1].leaves.map(dbLeaveToLocal);
-            if(results[2].ok) otList = results[2].ot.map(dbOtToLocal);
-            var refreshed=emps.find(function(e){return String(e.id)===String(CU.id)||String(e.dbId)===String(CU.dbId);});
-            if(refreshed){
-              var sid=CU.dbId; var cid=CU.id;
-              CU=refreshed; CU.dbId=sid; CU.id=cid;
-            }
-            saveData(); renderDash(); updND(); renderNI(); updPend();
-          }).catch(function(){});
-      }
-    }
-  } catch(ex){}
-})();
+/* 자동 로그인 복원은 initApp 완료 후 처리 */
+
 
 
 /* 로컬 테스트 모드 초기화 */
@@ -1411,7 +1381,8 @@ var LOCAL_MANUALS = [];
 var _localId = 100;
 
 /* 페이지 로드 시 localStorage 복원 */
-(function(){ if(!_lsLoad()) _lsSave(); /* 처음 실행이면 기본값 저장 */ else _lsSave(); /* 복원 후 guntae_emps도 동기화 */ })();
+/* _lsLoad/_lsSave: 로컬 모드에서만 사용 */
+if(USE_LOCAL_MODE){ if(!_lsLoad()) _lsSave(); else _lsSave(); }
 
 /* ── 로컬 모드 GAS 시뮬레이터 ── */
 function _localPost(action, body) {
@@ -1632,7 +1603,7 @@ function _localSanitize(u) {
   };
 }
 
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbzrldte_owUOk7WTk-GUM_qpQN4prkwRd2AcgD4FThaMLXmntM5mz213mSvOkNQNl92/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwUdfFHXFjUh1ZHGH20mr40FeDELl9c2VQHbFAFTp3gdh_ovuPrjfbXqngJ1Rzr849Y/exec';
 
 /* ── API 헬퍼 (GAS 기반) ── */
 function _gasGet(params) {
@@ -1640,16 +1611,48 @@ function _gasGet(params) {
   var qs = Object.keys(params).map(function(k){
     return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
   }).join('&');
-  return fetch(GAS_URL+'?'+qs).then(function(r){return r.json();});
+  return new Promise(function(resolve, reject) {
+    var timer = setTimeout(function(){ reject(new Error('timeout')); }, 10000);
+    fetch(GAS_URL+'?'+qs, {redirect:'follow'})
+      .then(function(r){
+        clearTimeout(timer);
+        return r.text().then(function(t){
+          try{ return JSON.parse(t); }
+          catch(e){ return {ok:false, error:'JSON 파싱 실패: '+t.slice(0,100)}; }
+        });
+      })
+      .then(resolve)
+      .catch(function(e){ clearTimeout(timer); reject(e); });
+  }).catch(function(err){
+    return {ok:false, error:'\uc11c\ubc84 \uc5f0\uacb0 \uc2e4\ud328: ' + (err.message||err)};
+  });
 }
 function _gasPost(action, body) {
   if(USE_LOCAL_MODE) return _localPost(action, body||{});
-  /* POST 방식으로 전송 — URL 길이 제한 없음, 데이터 안전 */
-  return fetch(GAS_URL + '?action=' + action, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body||{})
-  }).then(function(r){ return r.json(); });
+  var payload = JSON.stringify(body||{});
+  if(payload.length > 7000) {
+    var slim = Object.assign({}, body||{});
+    delete slim.images;
+    payload = JSON.stringify(slim);
+  }
+  var url = GAS_URL + '?action=' + action + '&payload=' + encodeURIComponent(payload);
+  return fetch(url, {redirect:'follow'})
+    .then(function(r){
+      return r.text().then(function(t){
+        try{ return JSON.parse(t); }
+        catch(e){ return {ok:false, error:'응답 파싱 실패: '+t.slice(0,100)}; }
+      });
+    })
+    .catch(function() {
+      /* 1.5초 후 1회 재시도 */
+      return new Promise(function(res){ setTimeout(res, 1500); })
+        .then(function(){
+          return fetch(url, {redirect:'follow'}).then(function(r){ return r.json(); });
+        });
+    })
+    .catch(function(err){
+      return {ok:false, error:'서버 연결 실패 (재시도 후에도 실패): '+(err.message||String(err))};
+    });
 }
 
 /* GET 래퍼들 — GAS 액션 매핑 */
@@ -1785,50 +1788,38 @@ function saveData(){
     localStorage.setItem('guntae_notifs', JSON.stringify(notifs));
     localStorage.setItem('guntae_nidx',   String(nidx));
     localStorage.setItem('guntae_otset',  JSON.stringify(otSettings));
-    if(CU) localStorage.setItem('guntae_cu', JSON.stringify(CU));
+    if(CU) localStorage.setItem('guntae_cu', JSON.stringify(Object.assign({}, CU, {_savedAt: Date.now()})));
   }catch(e){}
   /* ※ 실제 저장은 각 액션에서 GAS API 호출로 개별 처리됩니다 */
 }
 
 /* ── loadData: Google Sheets 에서 전체 데이터 로드 ── */
 function loadData(){
-  /* 1) 로컬 캐시 즉시 복원 (화면 깜빡임 방지) */
+  /* 1) 로컬 캐시 즉시 복원 */
   _loadFromLocal();
 
-  /* 2) Google Sheets 에서 최신 데이터 비동기 로드 */
+  /* 2) 각 요청 개별 처리 — 하나 실패해도 나머지 유지 */
+  function safeGet(path){
+    return apiGet(path).catch(function(){ return {ok:false}; });
+  }
   Promise.all([
-    apiGet('/api/users'),
-    apiGet('/api/leaves'),
-    apiGet('/api/ot')
+    safeGet('/api/users'),
+    safeGet('/api/leaves'),
+    safeGet('/api/ot')
   ]).then(function(results){
-    var usersRes=results[0], leavesRes=results[1], otRes=results[2];
-
-    /* 직원 목록 갱신 */
-    if(usersRes.ok && usersRes.users){
-      emps = usersRes.users.map(dbUserToEmp);
+    var anyOk=false;
+    if(results[0].ok && results[0].users){ emps=results[0].users.map(dbUserToEmp); anyOk=true; }
+    if(results[1].ok && results[1].leaves){ leaves=results[1].leaves.map(dbLeaveToLocal); anyOk=true; }
+    if(results[2].ok && results[2].ot){ otList=results[2].ot.map(dbOtToLocal); anyOk=true; }
+    if(anyOk){
+      saveData();
+      if(CU){
+        var refreshed=emps.find(function(e){return e.dbId===CU.dbId||e.name===CU.name;});
+        if(refreshed){var sid=CU.dbId,cid=CU.id;CU=refreshed;CU.dbId=sid;CU.id=cid;}
+        renderDash(); updND(); renderNI();
+      }
     }
-    /* 휴가 신청 갱신 */
-    if(leavesRes.ok && leavesRes.leaves){
-      leaves = leavesRes.leaves.map(dbLeaveToLocal);
-    }
-    /* 초과근무 갱신 */
-    if(otRes.ok && otRes.ot){
-      otList = otRes.ot.map(dbOtToLocal);
-    }
-
-    /* 로컬 캐시 업데이트 */
-    saveData();
-
-    /* UI 갱신 */
-    if(CU){
-      /* CU 를 최신 emps 에서 다시 찾아 동기화 */
-      var refreshed = emps.find(function(e){ return e.dbId===CU.dbId || e.name===CU.name; });
-      if(refreshed) CU = refreshed;
-      renderDash(); updND(); renderNI();
-    }
-  }).catch(function(err){
-    console.warn('GAS 로드 실패 — 로컬 캐시 사용:', err);
-    toast('서버 연결 실패. 로컬 캐시로 표시합니다. (GAS_URL: '+GAS_URL+')', 'wt');
+    /* 전부 실패해도 에러 토스트 없음 — 로컬 캐시로 조용히 운영 */
   });
 }
 
@@ -2096,15 +2087,8 @@ function doLogin(){
       CU = dbUserToEmp(res.user);
       /* ① 로컬 캐시로 즉시 화면 전환 */
       _loadFromLocal();
-      var cached=emps.find(function(e){ return e.dbId===CU.dbId||e.name===CU.name; });
-      if(cached){
-        /* 로컬 캐시로 UI 정보 보완하되, 서버에서 받은 id/dbId는 반드시 유지 */
-        var serverDbId = CU.dbId;
-        var serverId   = CU.id;
-        CU = cached;
-        CU.dbId = serverDbId;
-        CU.id   = serverId;
-      }
+      /* 로컬 캐시의 cached는 보조용 — 서버에서 받은 CU 값이 정확 */
+      /* role, dbId, id는 서버 응답값 유지 */
       g('login-wrap').style.display='none';
       g('app').style.display='block';
       initApp();
@@ -2140,7 +2124,20 @@ g('btn-login').addEventListener('click', doLogin);
 g('inp-name').addEventListener('keydown', function(e){ if(e.key==='Enter') g('inp-pw').focus(); });
 g('inp-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
-function doLogout(){ CU=null; localStorage.removeItem('guntae_cu'); g('login-wrap').style.display='flex'; g('app').style.display='none'; g('inp-name').value=''; g('inp-pw').value=''; g('lerr').textContent=''; }
+function doLogout(){
+  CU=null;
+  try{ sessionStorage.removeItem('guntae_page'); }catch(e){}
+  /* 세션 관련 localStorage 전체 초기화 */
+  ['guntae_cu','guntae_emps','guntae_leaves','guntae_ot','guntae_notifs'].forEach(function(k){
+    localStorage.removeItem(k);
+  });
+  emps=[]; leaves=[]; otList=[]; notifs=[];
+  g('login-wrap').style.display='flex';
+  g('app').style.display='none';
+  g('inp-name').value='';
+  g('inp-pw').value='';
+  g('lerr').textContent='';
+}
 g('btn-logout').addEventListener('click', doLogout);
 
 /* ── 비밀번호 변경 ── */
@@ -2628,6 +2625,8 @@ function goPage(pid){
   var si=document.querySelector('.sbi[data-p="'+pid+'"]'); if(si) si.classList.add('on');
   var m=PMETA[pid]||['',''];
   g('tbc').textContent=m[0]; g('tpt').textContent=m[1];
+  /* 현재 페이지 저장 (새로고침 복원용) */
+  try{ sessionStorage.setItem('guntae_page', pid); }catch(e){}
   if(pid==='lv-dash')  renderDash();
   if(pid==='lv-hist')  { renderHM(); renderHY(); }
   if(pid==='lv-yr')    renderYY();
@@ -2689,8 +2688,20 @@ function initApp(){
   var eop='<option value="">\uc804\uccb4 \uc9c1\uc6d0</option>'+emps.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
   g('al-emp').innerHTML=eop; g('ao-emp').innerHTML=eop;
   onTypeChg(); calcLeave(); updPend(); updND(); renderNI();
-  /* 역할별 시작 페이지 */
-  goPage((isAdmin||isMaster) ? 'adm-emp' : 'lv-dash');
+  /* 역할별 시작 페이지 — 새로고침 시 마지막 페이지 복원 */
+  var lastPage = '';
+  try{ lastPage = sessionStorage.getItem('guntae_page')||''; }catch(e){}
+  var defaultPage = (isAdmin||isMaster) ? 'adm-emp' : 'lv-dash';
+  /* 역할에 맞는 페이지인지 검증 */
+  var adminPages = ['adm-emp','adm-lv','adm-ot','adm-manual','appr'];
+  var empPages   = ['lv-dash','lv-apply','lv-hist','lv-yr','ot-apply','ot-hist'];
+  var validPage  = false;
+  if(lastPage){
+    if(isAdmin||isMaster) validPage = true; /* master/admin은 모든 페이지 허용 */
+    else if(CU.role==='approver') validPage = (empPages.indexOf(lastPage)>-1||lastPage==='appr');
+    else validPage = empPages.indexOf(lastPage)>-1;
+  }
+  goPage(validPage ? lastPage : defaultPage);
 }
 
 /* ── LEAVE FORM ── */
@@ -3730,16 +3741,19 @@ function renderAO(){
   var noteTotalMin=d.reduce(function(a,r){return a+parseNoteMin(r.note);},0);
 
   g('ao-stats').innerHTML=
-    '<div class="sc"><div class="scico bl">&#9200;</div><div class="scv">'+fmtH(th)+'</div><div class="scl">총 초과근무</div></div>'+
-    '<div class="sc"><div class="scico gr">&#9989;</div><div class="scv">'+fmtH(ah)+'</div><div class="scl">승인 완료</div></div>'+
+    '<div class="sc"><div class="scico bl">&#9200;</div><div class="scv">'+fmtH(th)+'</div><div class="scl">총 신청시간</div></div>'+
+    '<div class="sc"><div class="scico gr">&#9989;</div><div class="scv">'+fmtH(ah)+'</div><div class="scl">승인완료</div></div>'+
     '<div class="sc"><div class="scico am">&#9203;</div><div class="scv">'+d.filter(function(r){return r.status==='대기';}).length+'<small>건</small></div><div class="scl">대기 중</div></div>'+
     '<div class="sc"><div class="scico pu">&#128203;</div><div class="scv">'+(noteTotalMin>0?minsToHHMM(noteTotalMin):'0:00')+'</div><div class="scl">인정시간 누계</div></div>';
 
   var tb=g('ao-tb');
   if(!d.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--txt3)">내역이 없습니다.</td></tr>';return;}
   tb.innerHTML=d.map(function(r){
+    var maxH=Math.floor((r.hours||0)), maxM=Math.round(((r.hours||0)-maxH)*60);
+    var maxStr=(r.hours>0)?(maxH+':'+(maxM<10?'0':'')+maxM):'H:MM';
     var noteCell='<div style="display:flex;gap:4px;align-items:center;">'
-      +'<input type="text" id="aon-'+r.id+'" value="'+(r.note||'')+'" placeholder="H:MM" '
+      +'<input type="text" id="aon-'+r.id+'" value="'+(r.note||'00:00')+'" placeholder="'+maxStr+'" '
+      +'title="최대 '+maxStr+' 입력 가능" '
       +'style="width:62px;padding:4px 7px;border:1.5px solid var(--bdr);border-radius:6px;font-size:.8rem;font-family:\'DM Mono\',monospace;outline:none;" '
       +'onfocus="this.style.borderColor=\'var(--acc)\'" onblur="this.style.borderColor=\'var(--bdr)\'">'
       +'<button class="btn bp bxs" onclick="saveAONote('+r.id+')">저장</button>'
@@ -3762,14 +3776,32 @@ function renderAO(){
 window.saveAONote=function(id){
   var inp=g('aon-'+id); if(!inp) return;
   var val=inp.value.trim();
+  var r=otList.find(function(x){return String(x.id)===String(id);});
+  if(!r){toast('항목을 찾을 수 없습니다.','er');return;}
+
   if(val){
     var parts=val.split(':');
     var ok=parts.length===2&&!isNaN(parseInt(parts[0]))&&!isNaN(parseInt(parts[1]))&&parseInt(parts[1])>=0&&parseInt(parts[1])<=59;
     if(!ok){toast('시간 형식이 올바르지 않습니다. (H:MM 형식)','wt');return;}
-    if(parseInt(parts[0])*60+parseInt(parts[1])>600){toast('최대 10:00까지 입력 가능합니다.','wt');return;}
+
+    var inputMin = parseInt(parts[0])*60 + parseInt(parts[1]);
+
+    /* 00:00 = 미입력 상태로 처리 */
+    if(inputMin === 0){ val = ''; }
+    /* 1분 이상이면 최소 1시간 체크 */
+    else if(inputMin < 60){toast('인정시간은 최소 1:00 이상 입력해야 합니다.','wt');return;}
+
+    /* 신청 시간(r.hours) 기준 초과 체크 */
+    var appliedMin = Math.round((parseFloat(r.hours)||0)*60);
+    if(appliedMin > 0 && inputMin > appliedMin){
+      var appliedH = Math.floor(appliedMin/60), appliedM = appliedMin%60;
+      toast('신청 시간('+(appliedH+':'+(appliedM<10?'0':'')+appliedM)+') 초과 입력 불가합니다.','wt');
+      return;
+    }
+
+    /* 절대 상한: 10:00 */
+    if(inputMin > 600){toast('최대 10:00까지 입력 가능합니다.','wt');return;}
   }
-  var r=otList.find(function(x){return String(x.id)===String(id);});
-  if(!r){toast('항목을 찾을 수 없습니다.','er');return;}
 
   /* 저장 버튼 비활성화 */
   var saveBtn=g('aon-'+id) ? g('aon-'+id).parentNode.querySelector('button') : null;
@@ -3839,6 +3871,90 @@ function dlCSV(rows, fn){
 }
 g('btn-exlv').addEventListener('click',function(){ if(!leaves.length){toast('\ub0b4\ubcf4\ub0bc \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.','wt');return;} var rows=[['\uc9c1\uc6d0','\uc885\ub958','\uc2dc\uc791','\uc885\ub8cc','\uc77c\uc218','\uc2dc\uac04','\uc0ac\uc720','\uc2e0\uccad\uc77c','\uc0c1\ud0dc']]; leaves.forEach(function(r){rows.push([r.empNm,r.type,r.sd,r.ed||r.sd,r.wd||0,r.wh||0,r.rsn,r.appAt,r.status]);}); dlCSV(rows,'\ud734\uac00\ub0b4\uc5ed.csv'); toast('CSV \ub2e4\uc6b4\ub85c\ub4dc','ok'); });
 g('btn-exot').addEventListener('click',function(){ if(!otList.length){toast('\ub0b4\ubcf4\ub0bc \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.','wt');return;} var rows=[['\uc9c1\uc6d0','\uadfc\ubb34\uc77c','\uc2dc\uc791','\uc885\ub8cc','\uc2dc\uac04\uc218','\uc5c5\ubb34\ub0b4\uc6a9','\ube44\uace0','\uc2e0\uccad\uc77c','\uc0c1\ud0dc']]; otList.forEach(function(r){rows.push([r.empNm,r.dt,r.start,r.end,fmtH(r.hours),r.desc,r.note||'',r.appAt,r.status]);}); dlCSV(rows,'\ucd08\uacfc\uadfc\ubb34\ub0b4\uc5ed.csv'); toast('CSV \ub2e4\uc6b4\ub85c\ub4dc','ok'); });
+
+
+/* ── 새로고침 후 자동 로그인 복원 ─────────────────────────
+   모든 변수 선언 및 함수 정의 완료 후 실행
+   ────────────────────────────────────────────────────── */
+function tryAutoLogin(){
+  try{
+    var raw = localStorage.getItem('guntae_cu');
+    if(!raw) return false;
+    var saved = JSON.parse(raw);
+    if(!saved || !saved.id || !saved.name) return false;
+    /* 8시간(28800초) 초과 시 자동 로그인 거부 */
+    var SESSION_TTL = 8 * 60 * 60 * 1000;
+    if(saved._savedAt && (Date.now() - saved._savedAt) > SESSION_TTL){
+      localStorage.removeItem('guntae_cu');
+      return false;
+    }
+
+    /* 1. CU 복원 */
+    CU = saved;
+
+    /* 2. localStorage에서 데이터 복원 */
+    try{ var se=localStorage.getItem('guntae_emps');
+         if(se){ var pe=JSON.parse(se); if(pe&&pe.length) emps=pe; } }catch(e){}
+    try{ var sl=localStorage.getItem('guntae_leaves');
+         if(sl) leaves=JSON.parse(sl); }catch(e){}
+    try{ var so=localStorage.getItem('guntae_ot');
+         if(so) otList=JSON.parse(so); }catch(e){}
+    try{ var sn=localStorage.getItem('guntae_notifs');
+         if(sn) notifs=JSON.parse(sn); }catch(e){}
+
+    /* 3. 화면 전환 */
+    g('login-wrap').style.display='none';
+    g('app').style.display='block';
+    initApp();
+
+    /* 4. 백그라운드 GAS 갱신 — 성공한 데이터만 반영 */
+    function safeApiGet(path){
+      return apiGet(path).catch(function(){ return {ok:false}; });
+    }
+    if(!USE_LOCAL_MODE){
+      Promise.all([
+        safeApiGet('/api/users'),
+        safeApiGet('/api/leaves'),
+        safeApiGet('/api/ot')
+      ]).then(function(results){
+        var ok=false;
+        try{
+          if(results[0].ok && results[0].users && results[0].users.length>0){
+            var newEmps = results[0].users.map(dbUserToEmp);
+            if(newEmps.length>0){ emps=newEmps; ok=true; }
+          }
+        }catch(e){}
+        try{
+          if(results[1].ok && results[1].leaves){
+            leaves = results[1].leaves.map(dbLeaveToLocal); ok=true;
+          }
+        }catch(e){}
+        try{
+          if(results[2].ok && results[2].ot){
+            otList = results[2].ot.map(dbOtToLocal); ok=true;
+          }
+        }catch(e){}
+        if(ok && CU){
+          /* CU 동기화: 서버 id 보존 */
+          var found=emps.find(function(e){
+            return String(e.dbId)===String(CU.dbId)||String(e.id)===String(CU.id)||e.name===CU.name;
+          });
+          if(found){
+            var keepDbId=CU.dbId, keepId=CU.id;
+            CU=found; CU.dbId=keepDbId; CU.id=keepId;
+          }
+          saveData();
+          try{ renderDash(); }catch(e){}
+          try{ updND(); updPend(); }catch(e){}
+        }
+      });
+    }
+    return true;
+  }catch(ex){ return false; }
+}
+
+/* 페이지 로드 시 자동 로그인 시도 */
+tryAutoLogin();
 
 }); // DOMContentLoaded end
 </script>
