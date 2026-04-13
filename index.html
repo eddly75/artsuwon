@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1a2236">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>근태관리 시스템</title>
+<title>근태관리 시스템 v2.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f0f4f8;--surf:#fff;--surf2:#f7f9fc;--bdr:#e2e8f0;--acc:#2d69f0;--accl:#ebf0ff;--acc2:#10b981;--acc3:#f59e0b;--acc4:#ef4444;--acc5:#8b5cf6;--txt:#1e293b;--txt2:#64748b;--txt3:#94a3b8;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);--shlg:0 8px 32px rgba(0,0,0,.12);--r:12px;--sw:260px;}
@@ -446,17 +446,10 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
     <div id="lerr"></div>
     <button class="lbtn" id="btn-login">로그인</button>
-    <!-- 로컬 테스트 모드 배너 -->
-    <div id="local-banner" style="display:none;background:#fef3c7;border:1.5px solid #f59e0b;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.76rem;color:#92400e;">
-      <strong>🧪 로컬 테스트 모드</strong> — GAS 서버 미연결<br>
-      테스트 계정: <strong>마스터 / master1234</strong> &nbsp;|&nbsp; <strong>교향관리자 / admin1234</strong> &nbsp;|&nbsp; <strong>홍길동 / 1234</strong><br>
-      <span style="font-size:.72rem;color:#b45309;">새로고침해도 데이터가 유지됩니다.</span>
-      &nbsp;<button onclick="if(confirm('테스트 데이터를 초기화하시겠습니까?')){Object.keys(localStorage).filter(function(k){return k.indexOf('guntae_local_test_')===0;}).forEach(function(k){localStorage.removeItem(k);});location.reload();}" style="font-size:.7rem;padding:2px 8px;background:#f59e0b;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-left:4px;">데이터 초기화</button>
-    </div>
     <div class="ltip">
       <strong>&#128204; 사용 안내</strong><br>
       &bull; 이름 입력 후 비밀번호를 입력하세요<br>
-      &bull; 초기 비밀번호 <strong>1234</strong> (권장 영문+숫자 / 예시 <strong>pass1234</strong>)<br>
+      &bull; 초기 비밀번호: <strong>영문+숫자 4자리 이상</strong> (예: <strong>pass1234</strong>)<br>
       &bull; 로그인 후 사이드바 하단에서 비밀번호 변경 가능
     </div>
   </div>
@@ -565,11 +558,11 @@ tbody tr:last-child td{border-bottom:none;}
       <div class="sbi" data-p="adm-ot"><span class="ic">&#128200;</span> 초과근무 내역</div>
       <div class="sbi" data-p="appr"><span class="ic">&#9203;</span> 승인 대기 <span class="sbbdg" id="pcnt-adm" style="display:none">0</span></div>
       <div class="sbi" data-p="adm-manual"><span class="ic">&#128218;</span> 업무 인수 메뉴얼</div>
+      <div class="sbi" data-p="adm-audit"><span class="ic">&#128269;</span> 감사 로그</div>
     </div>
   </nav>
   <div class="sbfoot">
     <div class="sfbtn" id="btn-chpw">&#128273; 비밀번호 변경</div>
-    <div class="sfbtn" id="btn-reset-data" style="margin-top:6px;display:none;color:#ef4444;">&#128465; 데이터 초기화</div>
     <div class="sfbtn" id="btn-logout" style="margin-top:6px;">&#128682; 로그아웃</div>
   </div>
 </aside>
@@ -582,7 +575,6 @@ tbody tr:last-child td{border-bottom:none;}
       <button class="hbg" id="btn-hbg"><span></span><span></span><span></span></button>
       <div class="tbl"><div class="bc" id="tbc"></div><div class="pt" id="tpt"></div></div>
     </div>
-    <div id="local-topbadge" style="display:none;background:#f59e0b;color:#fff;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;margin-right:4px;">🧪 테스트모드</div>
       <div class="tbr">
       <button class="nbtn" id="btn-notif" style="position:relative;">&#128276;<span class="nd" id="nd"></span><span id="nd-pend" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--acc4);color:#fff;font-size:.6rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;line-height:1;"></span></button>
       <div class="upill"><div class="av" id="topav" style="background:var(--acc);width:26px;height:26px;font-size:.72rem;">?</div><span id="topnm">-</span></div>
@@ -646,14 +638,13 @@ tbody tr:last-child td{border-bottom:none;}
               <div class="fr">
                 <div class="fg"><label class="fl">시작일 <span class="rq">*</span></label><input type="date" class="fc" id="la-s"></div>
                 <div class="fg"><label class="fl">종료일 <span class="rq">*</span></label><input type="date" class="fc" id="la-e"></div>
-                <div id="la-date-warn" style="display:none;color:var(--acc4);font-size:.76rem;margin-top:-8px;padding:4px 2px;">⚠️ 주말·공휴일은 신청할 수 없습니다.</div>
               </div>
             </div>
             <div id="wrap-half" style="display:none;">
-              <div class="fg"><label class="fl">날짜 <span class="rq">*</span></label><input type="date" class="fc" id="la-hd" onchange="if(isNW(this.value))toast('주말·공휴일은 신청할 수 없습니다.','wt')"></div>
+              <div class="fg"><label class="fl">날짜 <span class="rq">*</span></label><input type="date" class="fc" id="la-hd"></div>
             </div>
             <div id="wrap-time" style="display:none;">
-              <div class="fg"><label class="fl">날짜 <span class="rq">*</span></label><input type="date" class="fc" id="la-td" onchange="if(isNW(this.value))toast('주말·공휴일은 신청할 수 없습니다.','wt')"></div>
+              <div class="fg"><label class="fl">날짜 <span class="rq">*</span></label><input type="date" class="fc" id="la-td"></div>
               <div class="fr">
                 <div class="fg"><label class="fl">시작 시간 <span class="rq">*</span></label><select class="fc" id="la-ts"></select></div>
                 <div class="fg"><label class="fl">종료 시간 <span class="rq">*</span></label><select class="fc" id="la-te"></select></div>
@@ -811,19 +802,11 @@ tbody tr:last-child td{border-bottom:none;}
         </div>
         <div style="display:flex;gap:7px;align-items:center;">
           <span id="inactive-badge" style="display:none;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:20px;padding:3px 10px;font-size:.74rem;font-weight:700;"></span>
-          <div style="display:flex;gap:8px;align-items:center;">
-          <select class="fc" id="emp-dept-filter" style="width:110px;" onchange="renderEmpTbl()">
-            <option value="">전체 소속</option>
-        <option value="교향악단">교향악단</option>
-        <option value="합창단">합창단</option>
-        <option value="공연단">공연단</option>
-          </select>
           <button class="btn bp" id="btn-addemp">직원 추가</button>
-        </div>
         </div>
       </div>
       <div class="card"><div class="tw"><table>
-        <thead><tr><th>이름</th><th>소속</th><th>입사일</th><th>권한</th><th>연차배정</th><th>사용</th><th>잔여</th><th>자녀돌봄</th><th>병가</th><th>초과근무 단가</th><th>관리</th></tr></thead>
+        <thead><tr><th>이름</th><th>입사일</th><th>권한</th><th>연차배정</th><th>사용</th><th>잔여</th><th>자녀돌봄</th><th>병가</th><th>초과근무 단가</th><th>관리</th></tr></thead>
         <tbody id="emp-tb"></tbody>
       </table></div></div>
     </div>
@@ -869,6 +852,28 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
 
   
+
+
+<!-- 감사 로그 페이지 (관리자 전용) -->
+<div class="page" id="p-adm-audit">
+  <div class="guide"><h4>🔍 접속 및 작업 감사 로그</h4><ul>
+    <li>로그인·휴가 승인·반려·직원 추가 등 주요 작업 이력을 확인합니다.</li>
+    <li>최근 200건이 브라우저에 보관되며, GAS 서버에도 기록됩니다.</li>
+  </ul></div>
+  <div class="sh" style="align-items:center;margin-bottom:14px;">
+    <div class="sht">🔍 감사 로그</div>
+    <button class="btn bxs bs" onclick="
+      if(confirm('감사 로그를 초기화하시겠습니까?')){
+        localStorage.removeItem('guntae_audit');
+        renderAuditLog();
+        toast('감사 로그가 초기화되었습니다.','ok');
+      }">초기화</button>
+  </div>
+  <div class="card"><div class="tw"><table>
+    <thead><tr><th>일시</th><th>사용자</th><th>작업</th><th>상세</th></tr></thead>
+    <tbody id="audit-tb"></tbody>
+  </table></div></div>
+</div>
 
 <!-- 업무 인수 메뉴얼 페이지 -->
 <div class="page" id="p-adm-manual">
@@ -1063,7 +1068,7 @@ tbody tr:last-child td{border-bottom:none;}
     </div>
     <div class="mof">
       <button class="btn bs" data-close="mo-confirm">닫기</button>
-      <button class="btn bng" id="btn-confirm-ok">취소 확인</button>
+      <button class="btn bng" id="btn-confirm-ok">확인</button>
     </div>
   </div>
 </div>
@@ -1097,18 +1102,8 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="fg"><label class="fl">자녀돌봄 배정(일) <span style="font-size:.7rem;color:var(--acc)">별도</span></label><input type="number" class="fc" id="ee-cc" min="0" max="20" step="1" value="3"></div>
         <div class="fg"><label class="fl">병가 배정(일) <span style="font-size:.7rem;color:var(--acc)">별도</span></label><input type="number" class="fc" id="ee-sl" min="0" max="120" step="1" value="60"></div>
       </div>
-      <div class="fr">
-        <div class="fg"><label class="fl">소속 <span class="rq">*</span></label>
-          <select class="fc" id="ee-dept">
-            <option value="">소속 선택</option>
-              <option value="교향악단">교향악단</option>
-              <option value="합창단">합창단</option>
-              <option value="공연단">공연단</option>
-          </select>
-        </div>
-        <div class="fg"><label class="fl">권한</label>
-          <select class="fc" id="ee-rl"><option value="employee">일반 직원</option><option value="approver">승인자</option><option value="admin">관리자</option><option value="master">마스터</option></select>
-        </div>
+      <div class="fg"><label class="fl">권한</label>
+        <select class="fc" id="ee-rl"><option value="employee">일반 직원</option><option value="approver">승인자</option><option value="admin">관리자</option></select>
       </div>
       <div class="fg">
         <label class="fl">초과근무 시간당 수당 단가 <span style="font-size:.7rem;color:var(--acc)">개인별</span></label>
@@ -1138,19 +1133,7 @@ tbody tr:last-child td{border-bottom:none;}
         <div class="fg"><label class="fl">병가 배정(일)</label><input type="number" class="fc" id="ae-sl" value="60" min="0" max="120"></div>
       </div>
       <div class="fg"><label class="fl">권한</label>
-        <div class="fr">
-          <div class="fg"><label class="fl">소속 <span class="rq">*</span></label>
-            <select class="fc" id="ae-dept">
-              <option value="">소속 선택</option>
-              <option value="교향악단">교향악단</option>
-              <option value="합창단">합창단</option>
-              <option value="공연단">공연단</option>
-            </select>
-          </div>
-          <div class="fg">
-            <select class="fc" id="ae-rl"><option value="employee">일반 직원</option><option value="approver">승인자</option><option value="admin">관리자</option><option value="master">마스터</option></select>
-          </div>
-        </div>
+        <select class="fc" id="ae-rl"><option value="employee">일반 직원</option><option value="approver">승인자</option><option value="admin">관리자</option></select>
       </div>
       <div class="fg">
         <label class="fl">초과근무 시간당 수당 단가 <span style="font-size:.7rem;color:var(--acc)">개인별</span></label>
@@ -1262,17 +1245,7 @@ tbody tr:last-child td{border-bottom:none;}
 document.addEventListener('DOMContentLoaded', function() {
 'use strict';
 
-/* 자동 로그인 복원은 initApp 완료 후 처리 */
-
-
-
-/* 로컬 테스트 모드 초기화 */
-if(USE_LOCAL_MODE){
-  var lb=document.getElementById('local-banner');
-  if(lb) lb.style.display='block';
-  var tb=document.getElementById('local-topbadge');
-  if(tb) tb.style.display='inline-block';
-}
+/* USE_LOCAL_MODE: 개발/테스트 전용 — 운영 시 false 유지 */
 
 
 /* ── 사이드바 토글 (모바일) ── */
@@ -1298,8 +1271,190 @@ function closeSB(){
   document.body.style.overflow = '';
 }
 
+/* ══════════════════════════════════════════════════════════════
+   ▼▼▼ [보안 강화] SHA-256 해싱 + 로그인 잠금 ▼▼▼
+   ═══════════════════════════════════════════════════════════════ */
+
+/* SHA-256 (Web Crypto API — HTTPS 환경 필요)
+   http 또는 구형 브라우저에서는 plain 전송으로 자동 fallback */
+async function sha256(str) {
+  if (!str) return '';
+  try {
+    if (window.crypto && window.crypto.subtle) {
+      var buf = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    }
+  } catch(e) {
+    console.warn('SHA-256 불가, plain 전송:', e.message);
+  }
+  /* crypto.subtle 미지원 시 빈 문자열 반환 → GAS 쪽 plain fallback 사용 */
+  return '';
+}
+
+/* 로그인 실패 횟수 제한 (5회 → 5분 잠금) */
+var _loginFails = 0;
+var _loginLockUntil = 0;
+var _LOGIN_MAX_TRIES = 5;
+var _LOGIN_LOCK_MS   = 5 * 60 * 1000; /* 5분 */
+
+function _isLoginLocked() {
+  if (_loginLockUntil > Date.now()) return true;
+  return false;
+}
+function _loginFail() {
+  _loginFails++;
+  if (_loginFails >= _LOGIN_MAX_TRIES) {
+    _loginLockUntil = Date.now() + _LOGIN_LOCK_MS;
+    _loginFails = 0;
+    return true; /* 잠금 발동 */
+  }
+  return false;
+}
+function _loginSuccess() { _loginFails = 0; _loginLockUntil = 0; }
+function _lockRemainSec() { return Math.ceil((_loginLockUntil - Date.now()) / 1000); }
+
+/* 초기 최강제 변경 플래그 확인 (최초 로그인 1234 비밀번호 시 강제 변경 유도) */
+var _WEAK_PASSWORDS = ['1234','admin1234','0000','password','pass1234'];
+function _isWeakPw(pw) { return _WEAK_PASSWORDS.indexOf(String(pw)) > -1; }
+
 /* ── DATA ── */
+
+/* ══════════════════════════════════════════════════════════════
+   ▼▼▼ [장기] 근로기준법 연차 자동 계산 엔진 ▼▼▼
+   근로기준법 제60조: 1년 미만 월 1일, 1년~3년 15일, 이후 2년마다 +1일, 최대 25일
+   ═══════════════════════════════════════════════════════════════ */
+function calcLegalAnnualDays(joinDateStr) {
+  if(!joinDateStr) return 15;
+  var join = new Date(joinDateStr);
+  var today = new Date();
+  var diffMs = today - join;
+  if(diffMs < 0) return 0;
+  var diffDays = Math.floor(diffMs / (1000*60*60*24));
+  var years = Math.floor(diffDays / 365);
+  var months = Math.floor(diffDays / 30);
+
+  if(years < 1) {
+    /* 1년 미만: 만 1개월 개근 시 1일, 최대 11일 */
+    return Math.min(months, 11);
+  } else {
+    /* 1년 이상: 15일 기본 + 2년마다 1일 추가, 최대 25일 */
+    var extra = Math.floor((years - 1) / 2);
+    return Math.min(15 + extra, 25);
+  }
+}
+
+/* 직원 추가 시 연차 자동 계산 적용 여부 */
+var USE_AUTO_ANNUAL = true; /* false 시 관리자 수동 입력 */
+
+/* 잔여 연차 소멸 예정 경고 (입사월 기준 소멸까지 N일 이내) */
+function checkLeaveExpiry(emp) {
+  if(!emp || !emp.join) return;
+  var join = new Date(emp.join);
+  var thisYear = new Date().getFullYear();
+  /* 연차 만료: 해당 연도 부여 연차는 다음 입사 기념일에 소멸 */
+  var expiry = new Date(thisYear, join.getMonth(), join.getDate());
+  if(expiry < new Date()) expiry.setFullYear(thisYear + 1);
+  var daysLeft = Math.ceil((expiry - new Date()) / (1000*60*60*24));
+  var ri = remInfo(emp);
+  if(daysLeft <= 90 && ri.d > 0 && emp.id === CU.id) {
+    /* 잔여 연차가 있고, 소멸까지 90일 이내인 경우 경고 */
+    var msg = '📅 잔여 연차 ' + ri.d + '일이 ' + daysLeft + '일 후(' + expiry.toLocaleDateString('ko-KR') + ') 소멸될 예정입니다.';
+    toast(msg, 'wt');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ▼▼▼ [장기] OT 야간·휴일 가산율 자동 계산 ▼▼▼
+   근로기준법 제56조: 연장(1.5배), 야간 22~06시(0.5 추가), 휴일(1.5배, 8h초과 2배)
+   ═══════════════════════════════════════════════════════════════ */
+function calcOTRate(startTime, endTime, workDate, baseRate) {
+  if(!baseRate || !startTime || !endTime) return { rate: baseRate||0, multiplier: 1.5, desc: '연장근무' };
+  var sh = parseInt(startTime), eh = parseInt(endTime);
+  var isHoliday = isNW(workDate);
+  var nightHours = 0; /* 22시 이후 시간 */
+  for(var h = sh; h < eh; h++) {
+    if(h >= 22 || h < 6) nightHours++;
+  }
+  var totalHours = eh - sh;
+  var normalHours = totalHours - nightHours;
+  var multiplier = isHoliday ? 1.5 : 1.5; /* 기본 연장 1.5배 */
+  var nightBonus = nightHours * 0.5;      /* 야간 가산 0.5배 추가 */
+  var effectiveMultiplier = multiplier + (nightHours > 0 ? nightBonus / totalHours : 0);
+  var totalPay = Math.round(totalHours * baseRate * effectiveMultiplier);
+  var desc = isHoliday ? '휴일근무' : (nightHours > 0 ? '연장+야간근무' : '연장근무');
+  return {
+    rate: baseRate,
+    multiplier: Math.round(effectiveMultiplier * 10) / 10,
+    totalPay: totalPay,
+    desc: desc,
+    nightHours: nightHours,
+    normalHours: normalHours
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ▼▼▼ [장기] 이메일 알림 (GAS MailApp 연동) ▼▼▼
+   GAS gas_api.js 에 sendMail(to, subject, body) 함수 추가 필요
+   ═══════════════════════════════════════════════════════════════ */
+var EMAIL_NOTIFY_ENABLED = false; /* GAS MailApp 연동 후 true 로 변경 */
+
+function sendEmailNotify(toName, subject, body) {
+  if(!EMAIL_NOTIFY_ENABLED) return;
+  /* GAS 측에 sendMail 액션 호출 */
+  _gasPost('sendMail', {to_name: toName, subject: subject, body: body})
+    .catch(function(){ console.warn('이메일 알림 전송 실패'); });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ▼▼▼ [장기] 접속 감사 로그 ▼▼▼
+   ═══════════════════════════════════════════════════════════════ */
+function writeAuditLog(action, detail) {
+  try {
+    var logs = JSON.parse(localStorage.getItem('guntae_audit')||'[]');
+    logs.push({
+      ts: new Date().toISOString(),
+      user: CU ? CU.name : 'system',
+      action: action,
+      detail: detail||''
+    });
+    /* 최근 200건만 유지 */
+    if(logs.length > 200) logs = logs.slice(-200);
+    localStorage.setItem('guntae_audit', JSON.stringify(logs));
+    /* GAS 서버에도 비동기 기록 (실패해도 무시) */
+    if(!USE_LOCAL_MODE) {
+      _gasPost('writeAudit', {user: CU?CU.name:'system', action:action, detail:detail||''}).catch(function(){});
+    }
+  } catch(e){}
+}
+
+/* ── 공휴일 (2025~2027 내장 + 공공데이터포털 API 자동 갱신) ── */
 var HOL = ['2025-01-01','2025-01-28','2025-01-29','2025-01-30','2025-03-01','2025-05-05','2025-05-06','2025-06-06','2025-08-15','2025-10-03','2025-10-06','2025-10-07','2025-10-08','2025-10-09','2025-12-25','2026-01-01','2026-02-16','2026-02-17','2026-02-18','2026-03-01','2026-05-05','2026-06-06','2026-08-17','2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-09','2026-12-25','2027-01-01','2027-01-27','2027-01-28','2027-01-29','2027-03-01','2027-05-05','2027-05-25','2027-06-06','2027-08-15','2027-09-15','2027-09-16','2027-09-17','2027-10-03','2027-10-09','2027-12-25'];
+
+/* 공공데이터포털 공휴일 자동 갱신 (선택 사항)
+   사용법: HOLIDAY_API_KEY 에 공공데이터포털 발급 키 입력
+   https://www.data.go.kr → 한국천문연구원_특일 정보 API
+   키 미입력 시 내장 배열로 동작합니다. */
+var HOLIDAY_API_KEY = ''; /* 여기에 API 키 입력 */
+(function fetchHolidayAPI(){
+  if(!HOLIDAY_API_KEY) return;
+  var thisYear = new Date().getFullYear();
+  var years = [thisYear, thisYear+1];
+  years.forEach(function(yr){
+    var url = 'https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getRestDeInfo'
+      + '?serviceKey=' + encodeURIComponent(HOLIDAY_API_KEY)
+      + '&solYear=' + yr + '&numOfRows=50&_type=json';
+    fetch(url).then(function(r){ return r.json(); }).then(function(data){
+      var items = data && data.response && data.response.body && data.response.body.items && data.response.body.items.item;
+      if(!items) return;
+      if(!Array.isArray(items)) items = [items];
+      items.forEach(function(it){
+        var d = String(it.locdate);
+        var fmt = d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8);
+        if(HOL.indexOf(fmt) === -1) HOL.push(fmt);
+      });
+    }).catch(function(){/* API 실패 시 내장 배열 유지 */});
+  });
+})();
 
 var emps = [];
 
@@ -1314,14 +1469,17 @@ var otSettings = {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   ▼▼▼ Google Apps Script URL 설정 — 배포 후 이 URL을 교체하세요 ▼▼▼
+   ▼▼▼ [필수] Google Apps Script URL — gas_api.js 배포 후 교체 ▼▼▼
+   - GAS 웹앱 배포 URL을 아래 GAS_URL 에 입력하세요.
+   - 배포 시 '누구나 액세스 가능' 으로 설정하고 HTTPS 사용 확인
+   - 운영 중 URL 변경 시 모든 사용자가 재로그인 필요합니다.
    ═══════════════════════════════════════════════════════════════ */
 
-/* 로컬 테스트 모드 — USE_LOCAL_MODE = true 시 GAS 없이 동작 */
+/* 로컬 테스트 모드 — 개발/테스트 전용. 운영 시 반드시 false */
 var USE_LOCAL_MODE = false;
 
 /* 로컬 테스트용 초기 데이터 (localStorage에서 복원, 없으면 기본값 사용) */
-var _LS_KEY = 'guntae_local_test_v2_';
+var _LS_KEY = 'guntae_local_test_';
 
 function _lsSave() {
   try {
@@ -1329,16 +1487,15 @@ function _lsSave() {
     localStorage.setItem(_LS_KEY+'leaves',  JSON.stringify(LOCAL_LEAVES));
     localStorage.setItem(_LS_KEY+'ot',      JSON.stringify(LOCAL_OT));
     localStorage.setItem(_LS_KEY+'notifs',  JSON.stringify(LOCAL_NOTIFS));
-    localStorage.setItem(_LS_KEY+'manuals', JSON.stringify(LOCAL_MANUALS||[]));
+    localStorage.setItem(_LS_KEY+'manuals', JSON.stringify(window._localManuals||[]));
     localStorage.setItem(_LS_KEY+'id',      String(_localId));
     /* GAS 캐시 키도 동기화 → _loadFromLocal()이 올바른 emps를 읽도록 */
     var sanitized = LOCAL_EMPS.map(_localSanitize).map(function(u){
       return {id:String(u.id),dbId:u.id,name:u.name,join:u.join_date,
-        role:({'admin':'admin','user':'employee','approver':'approver','master':'master'})[u.role]||u.role,
-        dept:u.dept||'',
+        role:({'admin':'admin','user':'employee','approver':'approver'})[u.role]||u.role,
         total:parseFloat(u.total_leaves)||0,usedD:parseFloat(u.used_leaves)||0,usedH:0,pw:'',
-        ccTotal:(u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,ccUsed:parseFloat(u.cc_used)||0,
-        slTotal:(u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,slUsed:parseFloat(u.sl_used)||0,
+        ccTotal:parseInt(u.cc_total)||3,ccUsed:parseFloat(u.cc_used)||0,
+        slTotal:parseInt(u.sl_total)||60,slUsed:parseFloat(u.sl_used)||0,
         otRate:parseInt(u.ot_rate)||0,otMaxHours:parseInt(u.ot_max_hours)||10};
     });
     localStorage.setItem('guntae_emps', JSON.stringify(sanitized));
@@ -1357,32 +1514,27 @@ function _lsLoad() {
     if(sl) LOCAL_LEAVES  = JSON.parse(sl);
     if(so) LOCAL_OT      = JSON.parse(so);
     if(sn) LOCAL_NOTIFS  = JSON.parse(sn);
-    if(sm) LOCAL_MANUALS = JSON.parse(sm);
+    if(sm) window._localManuals = JSON.parse(sm);
     if(si) _localId = parseInt(si)||100;
     return !!se; /* true면 저장 데이터 있음 */
   } catch(e){ return false; }
 }
 
 /* 기본 직원 데이터 */
+/* 배포판: 관리자 계정만 초기화. 실제 직원은 관리자 로그인 후 추가하세요. */
 var _DEFAULT_EMPS = [
-  {id:1, name:'마스터',     role:'master',   password:'master1234', dept:'',          join_date:'2020-01-01', total_leaves:20, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:0,     ot_max_hours:10},
-  {id:2, name:'교향관리자', role:'admin',    password:'admin1234',  dept:'교향악단', join_date:'2020-03-01', total_leaves:20, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:15000, ot_max_hours:10},
-  {id:3, name:'홍길동',     role:'user',     password:'1234',        dept:'교향악단', join_date:'2022-03-01', total_leaves:15, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:12000, ot_max_hours:10},
-  {id:4, name:'합창관리자', role:'admin',    password:'admin1234',  dept:'합창단',   join_date:'2020-06-01', total_leaves:20, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:15000, ot_max_hours:10},
-  {id:5, name:'김철수',     role:'approver', password:'1234',        dept:'합창단',   join_date:'2021-06-01', total_leaves:17, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:13000, ot_max_hours:10},
-  {id:6, name:'이영희',     role:'user',     password:'1234',        dept:'공연단',   join_date:'2023-03-01', total_leaves:12, used_leaves:0, cc_total:3, cc_used:0, sl_total:60, sl_used:0, ot_rate:11000, ot_max_hours:10},
+  {id:1, name:'\uad00\ub9ac\uc790', role:'admin', password:'admin1234', join_date:'2020-01-01', total_leaves:0, used_leaves:0, cc_total:0, cc_used:0, sl_total:0, sl_used:0, ot_rate:0, ot_max_hours:10},
 ];
 
 var LOCAL_EMPS   = _DEFAULT_EMPS.map(function(e){ return Object.assign({},e); });
 var LOCAL_LEAVES = [];
 var LOCAL_OT     = [];
 var LOCAL_NOTIFS = [];
-var LOCAL_MANUALS = [];
+if(!window._localManuals) window._localManuals = [];
 var _localId = 100;
 
 /* 페이지 로드 시 localStorage 복원 */
-/* _lsLoad/_lsSave: 로컬 모드에서만 사용 */
-if(USE_LOCAL_MODE){ if(!_lsLoad()) _lsSave(); else _lsSave(); }
+(function(){ if(!_lsLoad()) _lsSave(); /* 처음 실행이면 기본값 저장 */ else _lsSave(); /* 복원 후 guntae_emps도 동기화 */ })();
 
 /* ── 로컬 모드 GAS 시뮬레이터 ── */
 function _localPost(action, body) {
@@ -1481,8 +1633,7 @@ function _localRoute(action, body) {
 
     /* 휴가 삭제(취소) */
     case 'deleteLeave': {
-      var dl = LOCAL_LEAVES.find(function(x){ return String(x.id)===String(body.id); });
-      if(dl){ dl.status = '취소완료'; dl.approved_at = now; }
+      LOCAL_LEAVES = LOCAL_LEAVES.filter(function(x){ return String(x.id)!==String(body.id); });
       _lsSave();
       return {ok:true};
     }
@@ -1558,27 +1709,28 @@ function _localRoute(action, body) {
 
     /* 업무 인수 메뉴얼 */
     case 'getManuals':
-      return {ok:true, manuals: (LOCAL_MANUALS||[]).slice().reverse()};
+      return {ok:true, manuals: (window._localManuals||[]).slice().reverse()};
     case 'addManual': {
+      if(!window._localManuals) window._localManuals=[];
       var nm = Object.assign({}, body, {id:++_localId, created_at:now, updated_at:now});
       if(!nm.category) nm.category='\uae30\ud0c0';
       if(!nm.images) nm.images=[];
-      LOCAL_MANUALS.push(nm);
+      window._localManuals.push(nm);
       _lsSave();
       return {ok:true, manual:nm};
     }
     case 'updateManual': {
-      if(!LOCAL_MANUALS) return {ok:false,error:'없음'};
-      var mi = LOCAL_MANUALS.findIndex(function(x){return String(x.id)===String(body.id);});
+      if(!window._localManuals) return {ok:false,error:'없음'};
+      var mi = window._localManuals.findIndex(function(x){return String(x.id)===String(body.id);});
       if(mi<0) return {ok:false,error:'없음'};
-      Object.assign(LOCAL_MANUALS[mi], body, {updated_at:now});
-      if(!LOCAL_MANUALS[mi].images) LOCAL_MANUALS[mi].images=[];
+      Object.assign(window._localManuals[mi], body, {updated_at:now});
+      if(!window._localManuals[mi].images) window._localManuals[mi].images=[];
       _lsSave();
-      return {ok:true, manual:LOCAL_MANUALS[mi]};
+      return {ok:true, manual:window._localManuals[mi]};
     }
     case 'deleteManual': {
-      if(!LOCAL_MANUALS) return {ok:true};
-      LOCAL_MANUALS = LOCAL_MANUALS.filter(function(x){return String(x.id)!==String(body.id);});
+      if(!window._localManuals) return {ok:true};
+      window._localManuals = window._localManuals.filter(function(x){return String(x.id)!==String(body.id);});
       _lsSave();
       return {ok:true};
     }
@@ -1590,20 +1742,27 @@ function _localRoute(action, body) {
 
 function _localSanitize(u) {
   return {
-    id:u.id, name:u.name, role:u.role, dept:u.dept||'',
+    id:u.id, name:u.name, role:u.role,
     join_date: u.join_date ? String(u.join_date).slice(0,10) : '',
     total_leaves: parseFloat(u.total_leaves)||0,
     used_leaves:  parseFloat(u.used_leaves)||0,
-    cc_total:  (u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,
+    cc_total:  parseInt(u.cc_total)||3,
     cc_used:   parseFloat(u.cc_used)||0,
-    sl_total:  (u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,
+    sl_total:  parseInt(u.sl_total)||60,
     sl_used:   parseFloat(u.sl_used)||0,
     ot_rate:   parseInt(u.ot_rate)||0,
     ot_max_hours: parseInt(u.ot_max_hours)||10
   };
 }
 
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbzj7zebaNHZ25RNTFz_EnfKJ6Rd1hvrBtlp96I8-rSobwfZKV_gNg8j053vQDs5ZIuy/exec';
+/* ─── GAS 웹앱 배포 URL ─────────────────────────────────────────
+   gas_api.js 에 추가된 신규 액션:
+   - 'login'       : SHA-256 해시 비밀번호 검증 (plain 필드로 fallback 지원)
+   - 'sendMail'    : EMAIL_NOTIFY_ENABLED=true 시 MailApp으로 이메일 발송
+   - 'writeAudit'  : 감사 로그를 GAS 시트에 기록
+   gas_api.js 를 업데이트한 뒤 새 URL로 재배포 후 아래 URL 교체 필요
+   ──────────────────────────────────────────────────────────────── */
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbw9V3zgWg-O3eYLYh2R-7JeH5wt0NSG_u2NqJ4ddN3Ru-AEsUdOpB2u48KN4lzt9_2L/exec';
 
 /* ── API 헬퍼 (GAS 기반) ── */
 function _gasGet(params) {
@@ -1611,47 +1770,33 @@ function _gasGet(params) {
   var qs = Object.keys(params).map(function(k){
     return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
   }).join('&');
-  return new Promise(function(resolve, reject) {
-    var timer = setTimeout(function(){ reject(new Error('timeout')); }, 10000);
-    fetch(GAS_URL+'?'+qs, {redirect:'follow'})
-      .then(function(r){
-        clearTimeout(timer);
-        return r.text().then(function(t){
-          try{ return JSON.parse(t); }
-          catch(e){ return {ok:false, error:'JSON 파싱 실패: '+t.slice(0,100)}; }
-        });
-      })
-      .then(resolve)
-      .catch(function(e){ clearTimeout(timer); reject(e); });
-  }).catch(function(err){
-    return {ok:false, error:'\uc11c\ubc84 \uc5f0\uacb0 \uc2e4\ud328: ' + (err.message||err)};
-  });
+  return fetch(GAS_URL+'?'+qs).then(function(r){return r.json();});
 }
 function _gasPost(action, body) {
   if(USE_LOCAL_MODE) return _localPost(action, body||{});
-  var payload = JSON.stringify(body||{});
-  if(payload.length > 7000) {
-    var slim = Object.assign({}, body||{});
-    delete slim.images;
-    payload = JSON.stringify(slim);
-  }
-  var url = GAS_URL + '?action=' + action + '&payload=' + encodeURIComponent(payload);
-  return fetch(url, {redirect:'follow'})
+  /* GAS는 CORS상 POST body를 못 받으므로 GET+query string 방식으로 전송
+     action → URL 파라미터, body 각 필드 → 개별 파라미터로 전송
+     GAS route() 에서 p.action 과 body(각 파라미터) 를 읽음           */
+  var params = Object.assign({action: action}, body||{});
+  var qs = Object.keys(params).map(function(k){
+    var v = params[k];
+    if(v === null || v === undefined) v = '';
+    return encodeURIComponent(k) + '=' + encodeURIComponent(String(v));
+  }).join('&');
+  /* fetch 자체에 15초 타임아웃 적용 */
+  var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var fetchOpts = controller ? {method:'GET', signal:controller.signal} : {method:'GET'};
+  var fetchTimer = controller ? setTimeout(function(){ controller.abort(); }, 15000) : null;
+
+  return fetch(GAS_URL + '?' + qs, fetchOpts)
     .then(function(r){
-      return r.text().then(function(t){
-        try{ return JSON.parse(t); }
-        catch(e){ return {ok:false, error:'응답 파싱 실패: '+t.slice(0,100)}; }
-      });
-    })
-    .catch(function() {
-      /* 1.5초 후 1회 재시도 */
-      return new Promise(function(res){ setTimeout(res, 1500); })
-        .then(function(){
-          return fetch(url, {redirect:'follow'}).then(function(r){ return r.json(); });
-        });
+      if(fetchTimer) clearTimeout(fetchTimer);
+      return r.json();
     })
     .catch(function(err){
-      return {ok:false, error:'서버 연결 실패 (재시도 후에도 실패): '+(err.message||String(err))};
+      if(fetchTimer) clearTimeout(fetchTimer);
+      var msg = err.name === 'AbortError' ? '요청 시간 초과 (15초)' : ('네트워크 오류: ' + err.message);
+      return {ok:false, error:msg};
     });
 }
 
@@ -1712,44 +1857,37 @@ function apiDel(path) {
 
 function dbUserToEmp(u){
 
-  var roleMap = {'admin':'admin','user':'employee','approver':'approver','master':'master','Admin':'admin','User':'employee','Approver':'approver','Master':'master'};
-  var mappedRole = roleMap[u.role] || u.role;
+  var roleMap = {'admin':'admin','user':'employee','approver':'approver','Admin':'admin','User':'employee','Approver':'approver'};
   return {
-    id:    String(u.id),
-    dbId:  u.id,
-    name:  u.name,
-    join:  u.join_date ? String(u.join_date).slice(0,10) : '',
-    role:  mappedRole,
-    dept:  u.dept || '',
-    isMaster: mappedRole === 'master',
-    total: parseFloat(u.total_leaves)||0,
-    usedD: parseFloat(u.used_leaves)||0,
+    id: String(u.id),        // 모바일은 string id 사용
+    dbId: u.id,              // DB PK 보존
+    name: u.name,
+    join:     u.join_date ? String(u.join_date).slice(0,10) : '',
+    role: roleMap[u.role] || u.role,
+    total: u.total_leaves,
+    usedD: u.used_leaves,
     usedH: 0,
-    pw:    '',
-    ccTotal:    (u.cc_total!==null&&u.cc_total!==undefined&&u.cc_total!=='')?parseInt(u.cc_total):3,
-    ccUsed:     parseFloat(u.cc_used)||0,
-    slTotal:    (u.sl_total!==null&&u.sl_total!==undefined&&u.sl_total!=='')?parseInt(u.sl_total):60,
-    slUsed:     parseFloat(u.sl_used)||0,
-    otRate:     parseInt(u.ot_rate)||0,
-    otMaxHours: parseInt(u.ot_max_hours)||10
+    pw: '',                  // 보안상 클라이언트에 저장 안 함
+    ccTotal: 3, ccUsed: 0,
+    slTotal: 60, slUsed: 0
   };
 }
 
 function dbLeaveToLocal(r){
   
   /* 상태값 통일: GAS '대기중' → 로컬 '대기' */
-  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려','취소완료':'취소완료'};
+  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
   return {
     id: r.id,
     empId: String(r.user_id),
-    empNm: r.user_name || (function(){ var e=emps.find(function(x){return String(x.id)===String(r.user_id)||String(x.dbId)===String(r.user_id);}); return e?e.name:''; })()||'',
+    empNm: r.user_name || '',
     type: r.leave_type,
     sd: r.start_date ? String(r.start_date).slice(0,10) : '',
     ed: r.end_date ? String(r.end_date).slice(0,10) : '',
     wd: r.days,
     wh: parseFloat(r.hours_used)||0,
-    st: r.start_time ? fmtSheetTime(r.start_time) : '',
-    et: r.end_time   ? fmtSheetTime(r.end_time)   : '',
+    st: r.start_time || '',
+    et: r.end_time || '',
     rsn: r.reason || '',
     status: statusMap[r.status] || r.status,
     appAt: r.approved_at ? r.approved_at.slice(0,10) : '',
@@ -1760,14 +1898,14 @@ function dbLeaveToLocal(r){
 
 function dbOtToLocal(r){
   
-  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려','취소완료':'취소완료'};
+  var statusMap = {'대기중':'대기','승인':'승인','반려':'반려'};
   return {
     id: r.id,
     empId: String(r.user_id),
-    empNm: r.user_name || (function(){ var e=emps.find(function(x){return String(x.id)===String(r.user_id)||String(x.dbId)===String(r.user_id);}); return e?e.name:''; })()||'',
+    empNm: r.user_name || '',
     dt: r.work_date ? String(r.work_date).slice(0,10) : '',
-    start: r.start_time ? fmtSheetTime(r.start_time) : '',
-    end:   r.end_time   ? fmtSheetTime(r.end_time)   : '',
+    start: r.start_time,
+    end: r.end_time,
     hours: parseFloat(r.hours)||0,
     desc: r.description || '',
     note: r.note || '',
@@ -1788,45 +1926,55 @@ function saveData(){
     localStorage.setItem('guntae_notifs', JSON.stringify(notifs));
     localStorage.setItem('guntae_nidx',   String(nidx));
     localStorage.setItem('guntae_otset',  JSON.stringify(otSettings));
-    if(CU) localStorage.setItem('guntae_cu', JSON.stringify(Object.assign({}, CU, {_savedAt: Date.now()})));
   }catch(e){}
   /* ※ 실제 저장은 각 액션에서 GAS API 호출로 개별 처리됩니다 */
 }
 
 /* ── loadData: Google Sheets 에서 전체 데이터 로드 ── */
 function loadData(){
-  /* 1) 로컬 캐시 즉시 복원 */
+  /* 1) 로컬 캐시 즉시 복원 (화면 깜빡임 방지) */
   _loadFromLocal();
 
-  /* 2) 각 요청 개별 처리 — 하나 실패해도 나머지 유지 */
-  function safeGet(path){
-    return apiGet(path).catch(function(){ return {ok:false}; });
-  }
+  /* 2) Google Sheets 에서 최신 데이터 비동기 로드 */
   Promise.all([
-    safeGet('/api/users'),
-    safeGet('/api/leaves'),
-    safeGet('/api/ot')
+    apiGet('/api/users'),
+    apiGet('/api/leaves'),
+    apiGet('/api/ot')
   ]).then(function(results){
-    var anyOk=false;
-    if(results[0].ok && results[0].users){ emps=results[0].users.map(dbUserToEmp); anyOk=true; }
-    if(results[1].ok && results[1].leaves){ leaves=results[1].leaves.map(dbLeaveToLocal); anyOk=true; }
-    if(results[2].ok && results[2].ot){ otList=results[2].ot.map(dbOtToLocal); anyOk=true; }
-    if(anyOk){
-      saveData();
-      if(CU){
-        var refreshed=emps.find(function(e){return e.dbId===CU.dbId||e.name===CU.name;});
-        if(refreshed){var sid=CU.dbId,cid=CU.id;CU=refreshed;CU.dbId=sid;CU.id=cid;}
-        renderDash(); updND(); renderNI();
-      }
+    var usersRes=results[0], leavesRes=results[1], otRes=results[2];
+
+    /* 직원 목록 갱신 */
+    if(usersRes.ok && usersRes.users){
+      emps = usersRes.users.map(dbUserToEmp);
     }
-    /* 전부 실패해도 에러 토스트 없음 — 로컬 캐시로 조용히 운영 */
+    /* 휴가 신청 갱신 */
+    if(leavesRes.ok && leavesRes.leaves){
+      leaves = leavesRes.leaves.map(dbLeaveToLocal);
+    }
+    /* 초과근무 갱신 */
+    if(otRes.ok && otRes.ot){
+      otList = otRes.ot.map(dbOtToLocal);
+    }
+
+    /* 로컬 캐시 업데이트 */
+    saveData();
+
+    /* UI 갱신 */
+    if(CU){
+      /* CU 를 최신 emps 에서 다시 찾아 동기화 */
+      var refreshed = emps.find(function(e){ return e.dbId===CU.dbId || e.name===CU.name; });
+      if(refreshed) CU = refreshed;
+      renderDash(); updND(); renderNI();
+    }
+  }).catch(function(err){
+    console.warn('GAS 로드 실패 — 로컬 캐시 사용:', err);
+    toast('서버 연결 실패. 로컬 캐시로 표시합니다. (GAS_URL: '+GAS_URL+')', 'wt');
   });
 }
 
 function _loadFromLocal(){
   try{
     var se=localStorage.getItem('guntae_emps'); if(se) { var parsed=JSON.parse(se); if(parsed.length) emps=parsed; }
-    var scu=localStorage.getItem('guntae_cu'); if(scu){ var pcu=JSON.parse(scu); if(pcu&&pcu.id) CU=pcu; }
     var sl=localStorage.getItem('guntae_leaves'); if(sl) leaves=JSON.parse(sl);
     var so=localStorage.getItem('guntae_ot'); if(so) otList=JSON.parse(so);
     var sn=localStorage.getItem('guntae_notifs'); if(sn) notifs=JSON.parse(sn);
@@ -1836,37 +1984,8 @@ function _loadFromLocal(){
 }
 
 /* ── UTILS ── */
-
-/* ── 소속(dept) 접근 제어 ──────────────────────────────────
-   master: 모든 소속 접근 가능
-   admin/approver: 같은 dept 소속만 접근 가능
-   ────────────────────────────────────────────────────── */
-function canAccessEmp(emp) {
-  if(!CU) return false;
-  if(CU.role==='master') return true;          /* master: 전체 */
-  if(!CU.dept) return true;                    /* dept 미설정 시 전체 허용 */
-  return (emp.dept||'') === (CU.dept||'');     /* 같은 소속만 */
-}
-function filterByDept(list) {
-  if(!CU || CU.role==='master' || !CU.dept) return list;
-  return list.filter(function(r) {
-    /* leaves/ot 항목: empId로 직원 찾아 dept 비교 */
-    var e = getEmpById(r.empId) || emps.find(function(x){ return String(x.dbId)===String(r.empId); });
-    if(!e) return true; /* 직원 못 찾으면 표시 허용 */
-    return (e.dept||'') === (CU.dept||'');
-  });
-}
 function g(id){ return document.getElementById(id); }
 function todayS(){ return new Date().toISOString().slice(0,10); }
-function fmtSheetTime(v) {
-  if(!v) return '';
-  var s = String(v);
-  if(/^\d{1,2}:\d{2}$/.test(s)) return s;
-  /* Sheets ISO Date 형식: 1899-12-30T08:32:00.000Z */
-  var m = s.match(/T(\d{2}):(\d{2})/);
-  if(m) return m[1]+':'+m[2];
-  return s.slice(0,5);
-}
 function fmtD(s){
   if(!s) return '-';
   /* ISO 8601 (2026-03-17T15:00:00.000Z) 포함 정규화 */
@@ -1882,21 +2001,8 @@ function fmtH(h){
 }
 function fmtAmt(d,h){ return d ? (d+'\uc77c') : (h ? fmtH(h) : '-'); }
 function isHol(s){ return HOL.indexOf(s) > -1; }
+function isDow(s, d){ return new Date(s).getDay() === d; }
 function isNW(s){ var dw=new Date(s).getDay(); return dw===0||dw===6||isHol(s); }
-function alldays(s,e){
-  /* 주말·공휴일 포함 달력일수 */
-  var d=new Date(s), ed=new Date(e), cnt=0;
-  while(d<=ed){ cnt++; d.setDate(d.getDate()+1); }
-  return cnt;
-}
-function sldays(s,e){
-  /* 병가 일수 계산:
-     달력일수 30일 이상 → 주말·공휴일 포함 (달력일수)
-     달력일수 29일 이하 → 주말·공휴일 제외 (근무일수) */
-  var cal = alldays(s,e);
-  if(cal >= 30) return cal;   /* 30일 이상: 달력일수 */
-  return wdays(s,e);          /* 29일 이하: 근무일수 */
-}
 function wdays(s,e){
   var cnt=0, d=new Date(s), ed=new Date(e);
   while(d<=ed){ if(!isNW(d.toISOString().slice(0,10))) cnt++; d.setDate(d.getDate()+1); }
@@ -1967,20 +2073,19 @@ function addNotif(toId, title, msg, link){
 function updND(){
   if(!CU) return;
   /* 읽지 않은 알림 dot */
-  var u=notifs.filter(function(n){return String(n.to)===String(CU.id)&&!n.read;}).length;
+  var u=notifs.filter(function(n){return n.to===CU.id&&!n.read;}).length;
   var ndEl=g('nd'); if(ndEl) ndEl.style.display=u?'':'none';
   /* 승인 대기 숫자 뱃지 — 관리자/승인자에게만 표시 */
   var pendEl=g('nd-pend');
   if(pendEl){
-    if(CU.role==='admin'||CU.role==='master'||CU.role==='approver'){
-      var pendLeaves=filterByDept(leaves.filter(function(r){return r.status==='\ub300\uae30';}));
-      var pendOT=filterByDept(otList.filter(function(r){return r.status==='\ub300\uae30';}));
-      var cnt=pendLeaves.length+pendOT.length;
+    if(CU.role==='admin'||CU.role==='approver'){
+      var cnt=leaves.filter(function(r){return r.status==='\ub300\uae30';}).length
+             +otList.filter(function(r){return r.status==='\ub300\uae30';}).length;
       if(cnt>0){
         pendEl.textContent=cnt>99?'99+':String(cnt);
         pendEl.style.display='inline-flex';
-        /* 읽지 않은 알림도 있으면 dot 표시 유지 */
-        if(u===0 && ndEl) ndEl.style.display='none';
+        /* 알림 dot는 숨김 (뱃지로 대체) */
+        if(ndEl) ndEl.style.display='none';
       } else {
         pendEl.style.display='none';
       }
@@ -2076,19 +2181,46 @@ function doLogin(){
   if(!nm){ loginErr('이름을 입력해 주세요.'); return; }
   if(!pw){ loginErr('비밀번호를 입력해 주세요.'); return; }
 
-  /* GAS 로그인 */
+  /* 로그인 잠금 체크 */
+  if(_isLoginLocked()){
+    loginErr('로그인 5회 실패로 ' + _lockRemainSec() + '초 후 재시도 가능합니다.');
+    return;
+  }
+
   var btn=g('btn-login');
   btn.disabled=true; btn.textContent='로그인 중...';
 
-  apiPost('/api/login',{name:nm,password:pw})
+  /* 30초 타임아웃 — 버튼이 영원히 비활성 상태로 멈추는 현상 방지 */
+  var _loginTimer = setTimeout(function(){
+    btn.disabled=false; btn.textContent='로그인';
+    loginErr('서버 응답 시간 초과. 잠시 후 다시 시도해 주세요.');
+  }, 30000);
+
+  /* GAS HTTPS 전송 자체가 암호화되므로 plain 직접 전송 */
+  apiPost('/api/login',{name:nm,password:pw,plain:pw})
     .then(function(res){
+      clearTimeout(_loginTimer);
       btn.disabled=false; btn.textContent='로그인';
-      if(!res.ok){ loginErr(res.error||'로그인 실패'); return; }
+      if(!res.ok){
+        var locked = _loginFail();
+        if(locked){ loginErr('로그인 5회 실패. 5분간 잠금됩니다.'); }
+        else { loginErr(res.error||'로그인 실패 ('+(Math.max(0,_LOGIN_MAX_TRIES-_loginFails))+'회 남음)'); }
+        return;
+      }
+      _loginSuccess();
+      /* 약한 비밀번호 강제 변경 유도 */
+      if(_isWeakPw(pw)){
+        setTimeout(function(){
+          toast('⚠️ 초기 비밀번호를 사용 중입니다. 보안을 위해 즉시 변경해 주세요.', 'wt');
+          setTimeout(function(){ g('btn-chpw') && g('btn-chpw').click(); }, 1200);
+        }, 800);
+      }
       CU = dbUserToEmp(res.user);
+      writeAuditLog('로그인', nm + ' / ' + new Date().toLocaleString('ko-KR'));
       /* ① 로컬 캐시로 즉시 화면 전환 */
       _loadFromLocal();
-      /* 로컬 캐시의 cached는 보조용 — 서버에서 받은 CU 값이 정확 */
-      /* role, dbId, id는 서버 응답값 유지 */
+      var cached=emps.find(function(e){ return e.dbId===CU.dbId||e.name===CU.name; });
+      if(cached) CU=cached;
       g('login-wrap').style.display='none';
       g('app').style.display='block';
       initApp();
@@ -2115,29 +2247,18 @@ function doLogin(){
         toast('서버 연결 불안정 — 캐시 데이터로 표시 중','wt');
       });
     })
-    .catch(function(){
+    .catch(function(err){
+      clearTimeout(_loginTimer);
       btn.disabled=false; btn.textContent='로그인';
-      loginErr('서버 연결 실패. (' + GAS_URL + ')');
+      loginErr('서버 연결 실패. 네트워크 또는 GAS URL을 확인해 주세요.');
+      console.error('로그인 오류:', err);
     });
 }
 g('btn-login').addEventListener('click', doLogin);
 g('inp-name').addEventListener('keydown', function(e){ if(e.key==='Enter') g('inp-pw').focus(); });
 g('inp-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
 
-function doLogout(){
-  CU=null;
-  try{ sessionStorage.removeItem('guntae_page'); }catch(e){}
-  /* 세션 관련 localStorage 전체 초기화 */
-  ['guntae_cu','guntae_emps','guntae_leaves','guntae_ot','guntae_notifs'].forEach(function(k){
-    localStorage.removeItem(k);
-  });
-  emps=[]; leaves=[]; otList=[]; notifs=[];
-  g('login-wrap').style.display='flex';
-  g('app').style.display='none';
-  g('inp-name').value='';
-  g('inp-pw').value='';
-  g('lerr').textContent='';
-}
+function doLogout(){ CU=null; g('login-wrap').style.display='flex'; g('app').style.display='none'; g('inp-name').value=''; g('inp-pw').value=''; g('lerr').textContent=''; }
 g('btn-logout').addEventListener('click', doLogout);
 
 /* ── 비밀번호 변경 ── */
@@ -2157,11 +2278,11 @@ g('btn-cpwok').addEventListener('click',function(){
   if(nw===cur){erl.textContent='새 비밀번호가 현재와 동일합니다.';return;}
   var btn=g('btn-cpwok'); btn.disabled=true; btn.textContent='확인 중...';
   /* 숫자 비밀번호 대응: String() 변환 후 전송 */
-  apiPost('/api/login',{name:CU.name,password:String(cur)})
+  apiPost('/api/login',{name:CU.name,password:String(cur),plain:String(cur)})
     .then(function(chk){
       btn.disabled=false; btn.textContent='변경 저장';
       if(!chk.ok){erl.textContent='현재 비밀번호가 올바르지 않습니다.';return;}
-      apiPut('/api/users/'+CU.dbId,{password:String(nw)})
+      apiPut('/api/users/'+CU.dbId,{password:String(nw),plain:String(nw)})
         .then(function(res){
           if(!res.ok){erl.textContent=res.error||'변경 실패';return;}
           closeM('mo-cpw'); toast('비밀번호가 변경되었습니다.','ok');
@@ -2533,9 +2654,6 @@ window.catColor = catColor;
 window.escHtml = escHtml;
 /* ── 추가 전역 등록 ── */
 window.updateResetBtn = updateResetBtn;
-window.isNW = isNW;
-window.renderEmpTbl = renderEmpTbl;
-window.toast = toast;
 
 
 /* 이벤트 바인딩 */
@@ -2558,16 +2676,14 @@ window.toast = toast;
   var btnDel = g('btn-manual-delete');
   if(btnDel) btnDel.addEventListener('click', function(){
     if(!_manualEditId) return;
-    /* confirm() 대신 커스텀 모달 사용 */
-    g('confirm-title').textContent = '\uba54\ub274\uc5bc \uc0ad\uc81c';
-    g('confirm-msg').textContent = '\uc774 \uba54\ub274\uc5bc\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c? \uc0ad\uc81c\ud55c \ub370\uc774\ud130\ub294 \ubcf5\uad6c\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.';
-    var confirmBtn = g('btn-confirm-ok');
-    if(confirmBtn) {
-      confirmBtn.textContent = '\uc0ad\uc81c';
-      confirmBtn.className = 'btn bng';
-    }
-    _cancelType = 'manual'; /* 삭제 플래그 */
-    openM('mo-confirm');
+    if(!confirm('\uc774 \uba54\ub274\uc5bc\uc744 \uc0ad\uc81c\ud558\uc2dc\uaca0\uc2b5\ub2c8\uae4c?')) return;
+    _gasPost('deleteManual',{id:_manualEditId}).then(function(res){
+      if(!res.ok){toast(res.error||'\uc0ad\uc81c \uc2e4\ud328','er');return;}
+      manuals=manuals.filter(function(x){return String(x.id)!==String(_manualEditId);});
+      toast('\uba54\ub274\uc5bc\uc774 \uc0ad\uc81c\ub418\uc5c8\uc2b5\ub2c8\ub2e4.','ok');
+      showManualView('manual-list-view');
+      renderManualList();
+    }).catch(function(){toast('\uc11c\ubc84 \uc5f0\uacb0 \uc624\ub958','er');});
   });
 
   var btnSave = g('btn-manual-save');
@@ -2592,8 +2708,8 @@ window.toast = toast;
         if(idx>-1) manuals[idx]=res.manual;
       } else {
         manuals.unshift(res.manual);
-      }
       _manualImgs=[];
+      }
       toast('\uba54\ub274\uc5bc\uc774 \uc800\uc7a5\ub418\uc5c8\uc2b5\ub2c8\ub2e4.','ok');
       showManualView('manual-list-view');
       renderManualList();
@@ -2625,8 +2741,6 @@ function goPage(pid){
   var si=document.querySelector('.sbi[data-p="'+pid+'"]'); if(si) si.classList.add('on');
   var m=PMETA[pid]||['',''];
   g('tbc').textContent=m[0]; g('tpt').textContent=m[1];
-  /* 현재 페이지 저장 (새로고침 복원용) */
-  try{ sessionStorage.setItem('guntae_page', pid); }catch(e){}
   if(pid==='lv-dash')  renderDash();
   if(pid==='lv-hist')  { renderHM(); renderHY(); }
   if(pid==='lv-yr')    renderYY();
@@ -2636,6 +2750,7 @@ function goPage(pid){
   if(pid==='adm-lv')   renderAL();
   if(pid==='adm-ot')   renderAO();
   if(pid==='adm-manual') renderManualPage();
+  if(pid==='adm-audit')  setTimeout(renderAuditLog, 50);
 }
 document.querySelectorAll('.sbi').forEach(function(it){
   it.addEventListener('click', function(){
@@ -2664,19 +2779,18 @@ function initApp(){
   g('sbr').textContent=CU.role==='admin'?'\uad00\ub9ac\uc790':CU.role==='approver'?'\uc2b9\uc778\uc790':'\uc9c1\uc6d0';
   g('topav').textContent=CU.name[0]; g('topav').style.background=avc(CU.name);
   g('topnm').textContent=CU.name;
-  g('nav-appr').style.display=(CU.role==='approver')?'':'none'; /* admin/master는 nav-adm의 승인대기 사용 */
-  g('nav-adm').style.display=(CU.role==='admin'||CU.role==='master')?'':'none';
+  g('nav-appr').style.display=(CU.role==='approver')?'':'none';
+  g('nav-adm').style.display=CU.role==='admin'?'':'none';
   /* 직원용 메뉴: 관리자에게는 숨김 */
-  var isAdmin=(CU.role==='admin'||CU.role==='master');
-  var isMaster=CU.role==='master';
+  var isAdmin=(CU.role||'').toLowerCase()==='admin';
   var empLv=g('nav-emp-lv'), empOt=g('nav-emp-ot');
-  if(empLv) empLv.style.display=(isAdmin||isMaster)?'none':'';
-  if(empOt) empOt.style.display=(isAdmin||isMaster)?'none':'';
+  if(empLv) empLv.style.display=isAdmin?'none':'';
+  if(empOt) empOt.style.display=isAdmin?'none':'';
   /* 관리자는 로그인 후 직원관리 페이지로 이동 */
   /* 초기화 버튼: 관리자만 표시 (대소문자 무관) */
   var rdb=g('btn-reset-data');
   if(rdb){
-    rdb.style.setProperty('display', (isAdmin||isMaster)?'flex':'none', 'important');
+    rdb.style.setProperty('display', isAdmin?'flex':'none', 'important');
   }
   /* 관리자 승인대기 뱃지 동기화 */
   var pcntAdm=g('pcnt-adm');
@@ -2688,20 +2802,8 @@ function initApp(){
   var eop='<option value="">\uc804\uccb4 \uc9c1\uc6d0</option>'+emps.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
   g('al-emp').innerHTML=eop; g('ao-emp').innerHTML=eop;
   onTypeChg(); calcLeave(); updPend(); updND(); renderNI();
-  /* 역할별 시작 페이지 — 새로고침 시 마지막 페이지 복원 */
-  var lastPage = '';
-  try{ lastPage = sessionStorage.getItem('guntae_page')||''; }catch(e){}
-  var defaultPage = (isAdmin||isMaster) ? 'adm-emp' : 'lv-dash';
-  /* 역할에 맞는 페이지인지 검증 */
-  var adminPages = ['adm-emp','adm-lv','adm-ot','adm-manual','appr'];
-  var empPages   = ['lv-dash','lv-apply','lv-hist','lv-yr','ot-apply','ot-hist'];
-  var validPage  = false;
-  if(lastPage){
-    if(isAdmin||isMaster) validPage = true; /* master/admin은 모든 페이지 허용 */
-    else if(CU.role==='approver') validPage = (empPages.indexOf(lastPage)>-1||lastPage==='appr');
-    else validPage = empPages.indexOf(lastPage)>-1;
-  }
-  goPage(validPage ? lastPage : defaultPage);
+  /* 역할별 시작 페이지 */
+  goPage(isAdmin ? 'adm-emp' : 'lv-dash');
 }
 
 /* ── LEAVE FORM ── */
@@ -2744,7 +2846,7 @@ function calcLeave(){
     var ccU=leaves.filter(function(r){return r.empId===CU.id&&r.type===CC_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     g('la-bef').textContent=(ccT-ccU)+'\uc77c / '+ccT+'\uc77c (\uc790\ub140\ub3cc\ubd4c)';
   } else if(poolType==='sl'){
-    var slT=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
+    var slT=(CU.slTotal!==undefined&&CU.slTotal!==null)?CU.slTotal:60;
     var slU=leaves.filter(function(r){return r.empId===CU.id&&r.type===SL_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     g('la-bef').textContent=(slT-slU)+'\uc77c / '+slT+'\uc77c (\ubcd1\uac00)';
   } else if(poolType==='none'){
@@ -2755,20 +2857,7 @@ function calcLeave(){
 
   // 사용 예정
   var wd=0, wh=0;
-  if(u==='day'){
-    var s=g('la-s').value, e=g('la-e').value;
-    /* 병가가 아닐 때만 주말/공휴일 경고 */
-    var laWarn=g('la-date-warn');
-    if(laWarn){
-      if(t!=='병가' && s && s===e && isNW(s)) laWarn.style.display='';
-      else if(t!=='병가' && s && !e && isNW(s)) laWarn.style.display='';
-      else laWarn.style.display='none';
-    }
-    if(s&&e&&s<=e){
-      wd = (t==='병가') ? sldays(s,e) : wdays(s,e);
-    }
-    g('la-use').textContent=wd+'일';
-  }
+  if(u==='day'){ var s=g('la-s').value, e=g('la-e').value; if(s&&e&&s<=e) wd=wdays(s,e); g('la-use').textContent=wd+'\uc77c'; }
   else if(u==='half'){ wd=0.5; g('la-use').textContent='0.5\uc77c'; }
   else {
     var ts=g('la-ts').value, te=g('la-te').value;
@@ -2784,7 +2873,7 @@ function calcLeave(){
     if(ccAfter<0) g('la-aft').innerHTML='<span style="color:var(--acc4)">\uc790\ub140\ub3cc\ubd04 \uc794\uc5ec \ubd80\uc871!</span>';
     else g('la-aft').textContent=ccAfter+'\uc77c \ub0a8\uc74c';
   } else if(poolType==='sl'){
-    var slT2=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
+    var slT2=(CU.slTotal!==undefined&&CU.slTotal!==null)?CU.slTotal:60;
     var slU2=leaves.filter(function(r){return r.empId===CU.id&&r.type===SL_TYPE&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
     var slAfter=slT2-slU2-wd;
     if(slAfter<0) g('la-aft').innerHTML='<span style="color:var(--acc4)">\ubcd1\uac00 \uc794\uc5ec \ubd80\uc871!</span>';
@@ -2808,15 +2897,7 @@ g('btn-la').addEventListener('click', function(){
     sd=g('la-s').value; ed=g('la-e').value;
     if(!sd||!ed){ toast('날짜를 입력해 주세요.','wt'); return; }
     if(sd>ed){ toast('종료일이 시작일보다 빠릅니다.','wt'); return; }
-    if(t==='병가'){
-      /* 병가: 달력일수 30일 이상→주말포함, 29일 이하→근무일만 */
-      wd=sldays(sd,ed);
-      if(alldays(sd,ed)>60){ toast('병가는 최대 60일까지 신청 가능합니다.','wt'); return; }
-    } else {
-      /* 기타: 근무일만 계산, 주말/공휴일 차단 */
-      if(sd===ed && isNW(sd)){ toast('주말·공휴일은 신청할 수 없습니다.','wt'); return; }
-      wd=wdays(sd,ed); if(wd===0){ toast('선택 기간에 근무일이 없습니다.','wt'); return; }
-    }
+    wd=wdays(sd,ed); if(wd===0){ toast('선택 기간에 근무일이 없습니다.','wt'); return; }
     var dup=leaves.filter(function(r){ if(String(r.empId)!==String(CU.id)||r.status==='반려') return false; return r.sd<=ed && (r.ed||r.sd)>=sd; });
     if(dup.length){ toast('이미 신청된 휴가와 날짜가 중복됩니다. ('+fmtD(dup[0].sd)+')','er'); return; }
   } else if(u==='half'){
@@ -2839,18 +2920,6 @@ g('btn-la').addEventListener('click', function(){
   var ri=remInfo(CU), need=wd*8+wh;
   var dts=['연가','오전반가','오후반가','외출','조퇴'];
   if(dts.indexOf(t)>-1 && need>ri.r8){ toast('잔여 연차가 부족합니다.','er'); return; }
-  /* 병가 잔여 체크 */
-  if(t==='병가'){
-    var slTot=(CU.slTotal!==null&&CU.slTotal!==undefined)?CU.slTotal:60;
-    var slUsd=leaves.filter(function(r){return r.empId===CU.id&&r.type==='병가'&&r.status==='승인';}).reduce(function(a,r){return a+(r.wd||0);},0);
-    if(wd > slTot-slUsd){ toast('병가 잔여일수가 부족합니다. (잔여: '+(slTot-slUsd)+'일)','er'); return; }
-  }
-  /* 자녀돌봄 잔여 체크 */
-  if(t==='자녀돌봄'){
-    var ccTot=(CU.ccTotal!==null&&CU.ccTotal!==undefined)?CU.ccTotal:3;
-    var ccUsd=leaves.filter(function(r){return r.empId===CU.id&&r.type==='자녀돌봄'&&r.status==='승인';}).reduce(function(a,r){return a+(r.wd||0);},0);
-    if(wd > ccTot-ccUsd){ toast('자녀돌봄 잔여일수가 부족합니다. (잔여: '+(ccTot-ccUsd)+'일)','er'); return; }
-  }
 
   /* GAS 로 휴가 신청 전송 */
   var btn=g('btn-la'); btn.disabled=true; btn.textContent='신청 중...';
@@ -2898,6 +2967,9 @@ function renderDash(){
       +'<div style="flex:1;"><div style="font-size:.82rem;font-weight:600;">'+r.type+'</div>'
       +'<div style="font-size:.71rem;color:var(--txt2);">'+fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?' '+r.st+'~'+r.et:''))+'</div></div>'
       +bdg(r.status)+'</div>';}).join('');
+  /* 잔여 연차 소멸 경고 (로그인 직후 1회 + 대시보드 진입 시) */
+  if(!window._expiryChecked){ window._expiryChecked=true; setTimeout(function(){ checkLeaveExpiry(CU); },1500); }
+
   var now=new Date();
   var myot=otList.filter(function(r){return r.empId===emp.id&&new Date(r.dt).getMonth()===now.getMonth()&&new Date(r.dt).getFullYear()===now.getFullYear();});
   var th=myot.reduce(function(a,r){return a+(parseFloat(r.hours)||0);},0);
@@ -2923,7 +2995,7 @@ function renderCal(){
   var fd=new Date(calY,calM,1).getDay(), dim=new Date(calY,calM+1,0).getDate(), ts=todayS(), lm={}, otm={};
 
   // 휴가 맵
-  leaves.filter(function(r){return r.empId===CU.id&&r.status!=='\ubc18\ub824'&&r.status!=='\ucde8\uc18c\uc644\ub8cc';}).forEach(function(r){
+  leaves.filter(function(r){return r.empId===CU.id&&r.status!=='\ubc18\ub824';}).forEach(function(r){
     var d=new Date(r.sd), ed=new Date(r.ed||r.sd);
     while(d<=ed){
       if(d.getFullYear()===calY&&d.getMonth()===calM){
@@ -2985,9 +3057,9 @@ function renderHM(){
   tb.innerHTML=d.map(function(r){
     var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?'<br><span style="font-size:.7rem;color:var(--acc);">'+r.st+'~'+r.et+'</span>':''));
     var cancelBtn=r.status==='\ub300\uae30'
-      ?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c \uc2e0\uccad</button>'
+      ?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c</button>'
       :'';
-    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td style="font-size:.73rem;color:var(--txt2);">'+(r.apvAt?fmtD(r.apvAt):'-')+'</td><td>'+cancelBtn+'</td></tr>';
+    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td style="font-size:.73rem;color:var(--txt2);">'+(r.apvAt?fmtD(r.apvAt):'-')+'</td><td>'+cancelBtn+'</td></tr>';
   }).join('');
 }
 function renderHY(){
@@ -2997,7 +3069,7 @@ function renderHY(){
   if(!d.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--txt3)">\ud574\ub2f9 \uc5f0\ub3c4\uc758 \ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';return;}
   tb.innerHTML=d.map(function(r){
     var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?'<br><span style="font-size:.7rem;color:var(--acc);">'+r.st+'~'+r.et+'</span>':''));
-    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td></tr>';
+    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+bdg(r.status)+'</td></tr>';
   }).join('');
 }
 g('hm-yr').addEventListener('change',renderHM); g('hm-mo').addEventListener('change',renderHM);
@@ -3029,31 +3101,15 @@ window.cancelOT = function(id){
 };
 
 g('btn-confirm-ok').addEventListener('click', function(){
-  if(_cancelType === 'manual'){
-    /* 메뉴얼 삭제 */
-    var mid = _manualEditId;
-    _cancelId = null; _cancelType = null;
-    var cb=g('btn-confirm-ok'); if(cb){cb.textContent='\ucde8\uc18c \ud655\uc778'; cb.className='btn bng';}
-    closeM('mo-confirm');
-    if(!mid) return;
-    _gasPost('deleteManual',{id:mid}).then(function(res){
-      if(!res.ok){toast(res.error||'\uc0ad\uc81c \uc2e4\ud328','er');return;}
-      manuals=manuals.filter(function(x){return String(x.id)!==String(mid);});
-      toast('\uba54\ub274\uc5bc\uc774 \uc0ad\uc81c\ub418\uc5c8\uc2b5\ub2c8\ub2e4.','ok');
-      showManualView('manual-list-view');
-      renderManualList();
-    }).catch(function(){toast('\uc11c\ubc84 \uc5f0\uacb0 \uc624\ub958','er');});
-    return;
-  }
   if(_cancelType === 'lv' && _cancelId !== null){
     var r = leaves.find(function(x){ return x.id === _cancelId; });
     if(r){
       apiDel('/api/leaves/'+_cancelId)
         .then(function(res){
           if(!res.ok){ toast(res.error||'취소 실패','er'); return; }
-          r.status = '취소완료';
+          leaves = leaves.filter(function(x){ return x.id !== _cancelId; });
           saveData(); updPend();
-          toast(r.type + ' 취소 완료되었습니다.', 'ok');
+          toast(r.type + ' 신청이 취소되었습니다.', 'ok');
           renderHM(); renderHY();
         })
         .catch(function(){ toast('서버 연결 오류','er'); });
@@ -3066,15 +3122,13 @@ g('btn-confirm-ok').addEventListener('click', function(){
           if(!res.ok){ toast(res.error||'취소 실패','er'); return; }
           otList = otList.filter(function(x){ return x.id !== _cancelId; });
           saveData(); updPend();
-          toast('초과근무 취소 완료되었습니다.', 'ok');
+          toast('초과근무 신청이 취소되었습니다.', 'ok');
           renderOH();
         })
         .catch(function(){ toast('서버 연결 오류','er'); });
     }
   }
   _cancelId = null; _cancelType = null;
-  /* 확인 버튼 원래 문구 복원 */
-  var cb=g('btn-confirm-ok'); if(cb){cb.textContent='\ucde8\uc18c \ud655\uc778'; cb.className='btn bng';}
   closeM('mo-confirm');
 });
 
@@ -3140,8 +3194,8 @@ function renderYY(){
   if(!all.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--txt3)">\ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';return;}
   tb.innerHTML=all.map(function(r){
     var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?' '+r.st+'~'+r.et:''));
-    var cancelBtn=r.status==='\ub300\uae30'?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c \uc2e0\uccad</button>':'';
-    var rowStyle=r.status==='취소완료'?'opacity:.5;':''; return '<tr style="'+rowStyle+'"><td>'+(r.createdAt?fmtD(r.createdAt):'-')+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td>'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td>'+cancelBtn+'</td></tr>';
+    var cancelBtn=r.status==='\ub300\uae30'?'<button class="btn bng bxs" onclick="cancelLeave('+r.id+')">\ucde8\uc18c</button>':'';
+    return '<tr><td>'+fmtD(r.appAt)+'</td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td>'+r.rsn+'</td><td>'+bdg(r.status)+'</td><td>'+cancelBtn+'</td></tr>';
   }).join('');
 }
 g('yy-yr').addEventListener('change',renderYY);
@@ -3265,6 +3319,9 @@ g('btn-ot').addEventListener('click',function(){
   if(dupOT.length){ toast('해당 시간대에 이미 신청된 초과근무가 있습니다. ('+dupOT[0].start+'~'+dupOT[0].end+')','er'); return; }
   var hours=eh-sh;
 
+  /* 야간·휴일 가산율 계산 */
+  var otRateInfo = calcOTRate(s, e, dt, CU.otRate||0);
+
   /* GAS 로 OT 신청 전송 */
   var btn=g('btn-ot'); btn.disabled=true;
   apiPost('/api/ot',{user_id:CU.dbId,work_date:dt,start_time:s,end_time:e,hours:hours,description:desc})
@@ -3276,8 +3333,14 @@ g('btn-ot').addEventListener('click',function(){
       otList.push(newOT);
       saveData();
       var apvrs=emps.filter(function(ev){return ev.role==='admin'||ev.role==='approver';});
-      apvrs.forEach(function(a){addNotif(a.id,CU.name+'님 초과근무 신청',fmtD(dt)+' '+s+'~'+e+' ('+hours+'시간)','appr');});
-      toast('초과근무 신청이 완료되었습니다.','ok');
+      var otDesc = fmtD(dt)+' '+s+'~'+e+' ('+hours+'시간, '+otRateInfo.desc+')';
+      apvrs.forEach(function(a){addNotif(a.id,CU.name+'님 초과근무 신청',otDesc,'appr');});
+      writeAuditLog('OT신청', CU.name+' / '+otDesc);
+      /* 야간·휴일 수당 안내 토스트 */
+      var rateMsg = otRateInfo.multiplier > 1.5
+        ? ' (야간/휴일 가산 ×'+otRateInfo.multiplier+' 적용)'
+        : ' (연장 ×1.5 적용)';
+      toast('초과근무 신청 완료'+rateMsg,'ok');
       resetOT(); updPend();
     })
     .catch(function(){ btn.disabled=false; toast('서버 연결 오류','er'); });
@@ -3292,6 +3355,11 @@ function resetOT(){
 }
 g('btn-ot-rst').addEventListener('click',resetOT);
 
+function fmtOTNote(n){
+  // HH:MM 또는 H:MM 형식 검증 후 반환
+  if(!n||!n.trim()) return '';
+  return n.trim();
+}
 function parseNoteMin(n){
   // "H:MM" → 분으로 변환
   if(!n||!n.trim()) return 0;
@@ -3438,8 +3506,7 @@ g('btn-otset-ok').addEventListener('click',function(){
 
 /* ── APPROVER ── */
 function updPend(){
-  var cnt=filterByDept(leaves.filter(function(r){return r.status==='\ub300\uae30';})).length
-         +filterByDept(otList.filter(function(r){return r.status==='\ub300\uae30';})).length;
+  var cnt=leaves.filter(function(r){return r.status==='\ub300\uae30';}).length+otList.filter(function(r){return r.status==='\ub300\uae30';}).length;
   var el2=g('pcnt'); if(el2){el2.textContent=cnt; el2.style.display=cnt?'':'none';}
   /* 관리자 메뉴의 승인대기 뱃지도 동기화 */
   var el3=g('pcnt-adm'); if(el3){el3.textContent=cnt; el3.style.display=cnt?'':'none';}
@@ -3447,15 +3514,12 @@ function updPend(){
   updND();
 }
 function renderAppr(){
-  var pl=filterByDept(leaves.filter(function(r){return r.status==='대기';})), tb=g('apl-tb');
+  var pl=leaves.filter(function(r){return r.status==='\ub300\uae30';}), tb=g('apl-tb');
   if(!pl.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--txt3)">\ub300\uae30 \uc911\uc778 \ud734\uac00 \uc2e0\uccad\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';}
-  else tb.innerHTML=pl.map(function(r){var nm=r.empNm||(getEmpById(r.empId)&&getEmpById(r.empId).name)||r.empId||'-';
-    var pr=fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):'')+(r.st&&r.st.length<=5?' '+r.st+'~'+r.et:'');
-    return '<tr><td><div style="display:flex;align-items:center;gap:5px;"><div class="av" style="background:'+avc(nm)+';width:22px;height:22px;font-size:.62rem;">'+nm[0]+'</div><strong>'+nm+'</strong></div></td><td>'+chip(r.type)+'</td><td>'+pr+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+fmtD(r.appAt)+'</td><td><div style="display:flex;gap:4px;"><button class="btn bok bxs" onclick="apvLv('+r.id+')">\u2713 \uc2b9\uc778</button><button class="btn bng bxs" onclick="openRej('+r.id+',\'lv\')">\u2715 \ubc18\ub824</button></div></td></tr>';}).join('');
-  var po=filterByDept(otList.filter(function(r){return r.status==='대기';})), tb2=g('apo-tb');
+  else tb.innerHTML=pl.map(function(r){return '<tr><td><strong>'+r.empNm+'</strong></td><td>'+chip(r.type)+'</td><td>'+fmtD(r.sd)+(r.ed&&r.ed!==r.sd?' ~ '+fmtD(r.ed):''+(r.st?' '+r.st+'~'+r.et:''))+'</td><td>'+fmtAmt(r.wd,r.wh)+'</td><td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.rsn+'</td><td>'+fmtD(r.appAt)+'</td><td><div style="display:flex;gap:4px;"><button class="btn bok bxs" onclick="apvLv('+r.id+')">\u2713 \uc2b9\uc778</button><button class="btn bng bxs" onclick="openRej('+r.id+',\'lv\')">\u2715 \ubc18\ub824</button></div></td></tr>';}).join('');
+  var po=otList.filter(function(r){return r.status==='\ub300\uae30';}), tb2=g('apo-tb');
   if(!po.length){tb2.innerHTML='<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--txt3)">\ub300\uae30 \uc911\uc778 \ucd08\uacfc\uadfc\ubb34 \uc2e0\uccad\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';}
-  else tb2.innerHTML=po.map(function(r){var nmo=r.empNm||(getEmpById(r.empId)&&getEmpById(r.empId).name)||r.empId||'-';
-    return '<tr><td><div style="display:flex;align-items:center;gap:5px;"><div class="av" style="background:'+avc(nmo)+';width:22px;height:22px;font-size:.62rem;">'+nmo[0]+'</div><strong>'+nmo+'</strong></div></td><td>'+fmtD(r.dt)+'</td><td style="font-family:\'DM Mono\'">'+r.start+'~'+r.end+' ('+fmtH(r.hours)+')</td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.desc+'</td><td>'+fmtD(r.appAt)+'</td><td><div style="display:flex;gap:4px;"><button class="btn bok bxs" onclick="apvOT('+r.id+')">\u2713 \uc2b9\uc778</button><button class="btn bng bxs" onclick="openRej('+r.id+',\'ot\')">\u2715 \ubc18\ub824</button></div></td></tr>';}).join('');
+  else tb2.innerHTML=po.map(function(r){return '<tr><td><strong>'+r.empNm+'</strong></td><td>'+fmtD(r.dt)+'</td><td style="font-family:\'DM Mono\'">'+r.start+'~'+r.end+' ('+fmtH(r.hours)+')</td><td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+r.desc+'</td><td>'+fmtD(r.appAt)+'</td><td><div style="display:flex;gap:4px;"><button class="btn bok bxs" onclick="apvOT('+r.id+')">\u2713 \uc2b9\uc778</button><button class="btn bng bxs" onclick="openRej('+r.id+',\'ot\')">\u2715 \ubc18\ub824</button></div></td></tr>';}).join('');
   updPend();
 }
 window.apvLv=function(id){
@@ -3482,6 +3546,9 @@ window.apvLv=function(id){
       }
       saveData();
       addNotif(r.empId,'휴가 승인',r.type+' '+fmtD(r.sd)+' 승인되었습니다.','lv-hist');
+      writeAuditLog('휴가승인', r.empNm+' / '+r.type+' '+fmtD(r.sd)+'~'+fmtD(r.ed));
+      sendEmailNotify(r.empNm, '[근태관리] 휴가 신청이 승인되었습니다.',
+        r.empNm+'님의 '+r.type+' ('+fmtD(r.sd)+'~'+fmtD(r.ed)+') 신청이 승인되었습니다.');
       toast(r.empNm+'님의 '+r.type+' 신청을 승인했습니다.','ok'); renderAppr();
     })
     .catch(function(){ toast('서버 연결 오류','er'); });
@@ -3516,12 +3583,22 @@ g('btn-rejok').addEventListener('click',function(){
       if(rejType==='lv'){
         var r=leaves.find(function(x){return x.id===rejTgt;});
         if(r){ r.status='반려'; r.rejR=rsn; r.apvAt=todayS();
-          saveData(); addNotif(r.empId,'휴가 반려',r.type+' 신청이 반려되었습니다. 사유: '+rsn,'lv-hist');
+          saveData();
+          addNotif(r.empId,'휴가 반려',r.type+' 신청이 반려되었습니다. 사유: '+rsn,'lv-hist');
+          writeAuditLog('휴가반려', r.empNm+' / '+r.type+' '+fmtD(r.sd)+' / 사유:'+rsn);
+          sendEmailNotify(r.empNm, '[근태관리] 휴가 신청이 반려되었습니다.',
+            r.empNm+'님의 '+r.type+' ('+fmtD(r.sd)+') 신청이 반려되었습니다.
+반려 사유: '+rsn);
           toast(r.empNm+'님의 신청을 반려했습니다.','inf'); }
       } else {
         var r2=otList.find(function(x){return x.id===rejTgt;});
         if(r2){ r2.status='반려'; r2.apvAt=todayS();
-          saveData(); addNotif(r2.empId,'초과근무 반려',fmtD(r2.dt)+' 신청이 반려되었습니다. 사유: '+rsn,'ot-hist');
+          saveData();
+          addNotif(r2.empId,'초과근무 반려',fmtD(r2.dt)+' 신청이 반려되었습니다. 사유: '+rsn,'ot-hist');
+          writeAuditLog('OT반려', r2.empNm+' / '+fmtD(r2.dt)+' '+r2.start+'~'+r2.end+' / 사유:'+rsn);
+          sendEmailNotify(r2.empNm, '[근태관리] 초과근무 신청이 반려되었습니다.',
+            r2.empNm+'님의 초과근무 ('+fmtD(r2.dt)+') 신청이 반려되었습니다.
+반려 사유: '+rsn);
           toast(r2.empNm+'님의 신청을 반려했습니다.','inf'); }
       }
       closeM('mo-rej'); renderAppr();
@@ -3538,11 +3615,7 @@ function renderEmpTbl(){
     if(inactiveCnt>0){ badge.textContent='비활성 '+inactiveCnt+'명'; badge.style.display=''; }
     else badge.style.display='none';
   }
-    var deptF=g('emp-dept-filter')?g('emp-dept-filter').value:'';
-  g('emp-tb').innerHTML=emps.filter(canAccessEmp).filter(function(e){
-    if(deptF && (e.dept||'')!==deptF) return false;
-    return true;
-  }).map(function(e){
+  g('emp-tb').innerHTML=emps.map(function(e){
     var ri=remInfo(e);
     var ccT=(e.ccTotal!==undefined&&e.ccTotal!==null)?e.ccTotal:3;
     var ccU=leaves.filter(function(r){return r.empId===e.id&&r.type==='\uc790\ub140\ub3cc\ubd04'&&r.status==='\uc2b9\uc778';}).reduce(function(a,r){return a+(r.wd||0);},0);
@@ -3560,7 +3633,6 @@ function renderEmpTbl(){
       : '';
     return '<tr style="'+rowStyle+'">'
       +'<td><div style="display:flex;align-items:center;gap:7px;"><div class="av" style="background:'+(isInactive?'#94a3b8':avc(e.name))+';width:28px;height:28px;font-size:.72rem;">'+e.name[0]+'</div><strong>'+e.name+'</strong>'+nameBadge+'</div></td>'
-      +'<td><span style="background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:2px 8px;font-size:.72rem;color:var(--txt2);">'+( e.dept||'-')+'</span></td>'
       +'<td>'+fmtD(e.join)+'</td>'
       +'<td>'+roleBdg+'</td>'
       +'<td style="font-family:\'DM Mono\'">'+e.total+'일</td>'
@@ -3599,7 +3671,6 @@ window.openEE=function(id){
   g('ee-cc').value=(e.ccTotal!==undefined && e.ccTotal!==null) ? e.ccTotal : 3;
   g('ee-sl').value=(e.slTotal!==undefined && e.slTotal!==null) ? e.slTotal : 60;
   g('ee-rl').value=e.role;
-  if(g('ee-dept')) g('ee-dept').value=e.dept||'';
   g('ee-rate').value=(e.otRate!==undefined && e.otRate!==null) ? e.otRate : 0;
   openM('mo-eemp');
 };
@@ -3613,25 +3684,15 @@ g('btn-eeok').addEventListener('click',function(){
   var ccVal=g('ee-cc').value.trim();
   var slVal=g('ee-sl').value.trim();
   var rateVal=parseInt(g('ee-rate').value)||0;
-  var maxHVal=g('ee-maxh')?(parseInt(g('ee-maxh').value)||10):(e.otMaxHours||10);
 
-  var newCcTotal=(ccVal!==''&&!isNaN(parseInt(ccVal)))?parseInt(ccVal):(e.ccTotal||3);
-  var newSlTotal=(slVal!==''&&!isNaN(parseInt(slVal)))?parseInt(slVal):(e.slTotal||60);
-
-  var newDept=g('ee-dept')?g('ee-dept').value:e.dept||'';
-  apiPut('/api/users/'+e.dbId,{
-    total_leaves:newTotal, join_date:newJoin, role:dbRole, dept:newDept,
-    cc_total:newCcTotal, sl_total:newSlTotal,
-    ot_rate:rateVal, ot_max_hours:maxHVal
-  })
+  apiPut('/api/users/'+e.dbId,{total_leaves:newTotal,join_date:newJoin,role:dbRole})
     .then(function(res){
       if(!res.ok){ toast(res.error||'수정 실패','er'); return; }
       /* 로컬 동기화 */
-      e.join=newJoin; e.total=newTotal; e.role=newRole; e.dept=newDept;
-      e.ccTotal=newCcTotal;
-      e.slTotal=newSlTotal;
+      e.join=newJoin; e.total=newTotal; e.role=newRole;
+      e.ccTotal=(ccVal!==''&&!isNaN(parseInt(ccVal)))?parseInt(ccVal):(e.ccTotal||3);
+      e.slTotal=(slVal!==''&&!isNaN(parseInt(slVal)))?parseInt(slVal):(e.slTotal||60);
       e.otRate=rateVal;
-      e.otMaxHours=maxHVal;
       saveData();
       closeM('mo-eemp');
       toast(e.name+'님 정보가 수정되었습니다.','ok');
@@ -3687,17 +3748,19 @@ g('btn-aeok').addEventListener('click',function(){
   if(getEmpByNm(nm)){toast('이미 존재하는 이름입니다.','wt');return;}
   var newRole=g('ae-rl').value;
   var dbRole=(newRole==='admin')?'admin':(newRole==='approver')?'approver':'user';
+  /* 연차 자동 계산 (USE_AUTO_ANNUAL=true 시 법정 기준 자동 산정) */
+  var joinDt = g('ae-jn').value||todayS();
+  var autoLeaves = USE_AUTO_ANNUAL ? calcLegalAnnualDays(joinDt) : (parseFloat(g('ae-dy').value)||15);
+  var dispLeaves = USE_AUTO_ANNUAL ? autoLeaves : (parseFloat(g('ae-dy').value)||15);
   apiPost('/api/users',{
-    name:nm, password:'1234', role:dbRole,
-    dept:g('ae-dept')?g('ae-dept').value:'',
-    join_date:g('ae-jn').value||todayS(),
-    total_leaves:parseFloat(g('ae-dy').value)||15
+    name:nm, password:'1234', plain:'1234', role:dbRole,
+    join_date:joinDt,
+    total_leaves:dispLeaves
   })
   .then(function(res){
     if(!res.ok){ toast(res.error||'추가 실패','er'); return; }
     var newEmp=dbUserToEmp(res.user);
     newEmp.role=newRole;
-    newEmp.dept=g('ae-dept')?g('ae-dept').value:'';
     newEmp.ccTotal=parseInt(g('ae-cc').value)||3;
     newEmp.slTotal=parseInt(g('ae-sl').value)||60;
     newEmp.otRate=parseInt(g('ae-rate').value)||0;
@@ -3706,15 +3769,19 @@ g('btn-aeok').addEventListener('click',function(){
     var eo='<option value="">전체 직원</option>'+emps.map(function(e){return '<option value="'+e.id+'">'+e.name+'</option>';}).join('');
     g('al-emp').innerHTML=eo; g('ao-emp').innerHTML=eo;
     closeM('mo-aemp');
-    toast(nm+'님이 추가되었습니다. (비밀번호: 1234)','ok');
+    var pwMsg = USE_AUTO_ANNUAL ? ' | 연차 자동산정: '+dispLeaves+'일' : '';
+    toast(nm+'님이 추가되었습니다. (초기 비밀번호: 1234'+pwMsg+')','ok');
+    writeAuditLog('직원추가', nm+' / 역할:'+newRole+' / 연차:'+dispLeaves+'일');
+    /* 이메일 알림 (EMAIL_NOTIFY_ENABLED=true 시 동작) */
+    sendEmailNotify(nm, '[근태관리] 계정이 생성되었습니다.',
+      nm+'님의 계정이 생성되었습니다.\n초기 비밀번호: 1234\n로그인 후 즉시 변경해 주세요.');
     renderEmpTbl();
   })
   .catch(function(){ toast('서버 연결 오류','er'); });
 });
 function renderAL(){
-  var deptLeaves=filterByDept(leaves);
   var ef=g('al-emp').value, yr=parseInt(g('al-yr').value), mo=g('al-mo').value, st=g('al-st').value;
-  var d=deptLeaves.filter(function(r){ if(ef&&r.empId!==ef)return false; var dt=new Date(r.sd); if(dt.getFullYear()!==yr)return false; if(mo!==''&&dt.getMonth()!==parseInt(mo))return false; if(st&&r.status!==st)return false; return true; }).sort(function(a,b){return b.id-a.id;});
+  var d=leaves.filter(function(r){ if(ef&&r.empId!==ef)return false; var dt=new Date(r.sd); if(dt.getFullYear()!==yr)return false; if(mo!==''&&dt.getMonth()!==parseInt(mo))return false; if(st&&r.status!==st)return false; return true; }).sort(function(a,b){return b.id-a.id;});
   var tb=g('al-tb');
   if(!d.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--txt3)">\ub0b4\uc5ed\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>';return;}
   tb.innerHTML=d.map(function(r){
@@ -3726,9 +3793,8 @@ function renderAL(){
 window.renderAL=renderAL;
 
 function renderAO(){
-  var deptOT=filterByDept(otList);
   var ef=g('ao-emp').value, yr=parseInt(g('ao-yr').value), mo=g('ao-mo').value;
-  var d=deptOT.filter(function(r){
+  var d=otList.filter(function(r){
     if(ef&&r.empId!==ef) return false;
     var dt=new Date(r.dt);
     if(dt.getFullYear()!==yr) return false;
@@ -3741,19 +3807,16 @@ function renderAO(){
   var noteTotalMin=d.reduce(function(a,r){return a+parseNoteMin(r.note);},0);
 
   g('ao-stats').innerHTML=
-    '<div class="sc"><div class="scico bl">&#9200;</div><div class="scv">'+fmtH(th)+'</div><div class="scl">총 신청시간</div></div>'+
-    '<div class="sc"><div class="scico gr">&#9989;</div><div class="scv">'+fmtH(ah)+'</div><div class="scl">승인완료</div></div>'+
+    '<div class="sc"><div class="scico bl">&#9200;</div><div class="scv">'+fmtH(th)+'</div><div class="scl">총 초과근무</div></div>'+
+    '<div class="sc"><div class="scico gr">&#9989;</div><div class="scv">'+fmtH(ah)+'</div><div class="scl">승인 완료</div></div>'+
     '<div class="sc"><div class="scico am">&#9203;</div><div class="scv">'+d.filter(function(r){return r.status==='대기';}).length+'<small>건</small></div><div class="scl">대기 중</div></div>'+
     '<div class="sc"><div class="scico pu">&#128203;</div><div class="scv">'+(noteTotalMin>0?minsToHHMM(noteTotalMin):'0:00')+'</div><div class="scl">인정시간 누계</div></div>';
 
   var tb=g('ao-tb');
   if(!d.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--txt3)">내역이 없습니다.</td></tr>';return;}
   tb.innerHTML=d.map(function(r){
-    var maxH=Math.floor((r.hours||0)), maxM=Math.round(((r.hours||0)-maxH)*60);
-    var maxStr=(r.hours>0)?(maxH+':'+(maxM<10?'0':'')+maxM):'H:MM';
     var noteCell='<div style="display:flex;gap:4px;align-items:center;">'
-      +'<input type="text" id="aon-'+r.id+'" value="'+(r.note||'00:00')+'" placeholder="'+maxStr+'" '
-      +'title="최대 '+maxStr+' 입력 가능" '
+      +'<input type="text" id="aon-'+r.id+'" value="'+(r.note||'')+'" placeholder="H:MM" '
       +'style="width:62px;padding:4px 7px;border:1.5px solid var(--bdr);border-radius:6px;font-size:.8rem;font-family:\'DM Mono\',monospace;outline:none;" '
       +'onfocus="this.style.borderColor=\'var(--acc)\'" onblur="this.style.borderColor=\'var(--bdr)\'">'
       +'<button class="btn bp bxs" onclick="saveAONote('+r.id+')">저장</button>'
@@ -3776,32 +3839,14 @@ function renderAO(){
 window.saveAONote=function(id){
   var inp=g('aon-'+id); if(!inp) return;
   var val=inp.value.trim();
-  var r=otList.find(function(x){return String(x.id)===String(id);});
-  if(!r){toast('항목을 찾을 수 없습니다.','er');return;}
-
   if(val){
     var parts=val.split(':');
     var ok=parts.length===2&&!isNaN(parseInt(parts[0]))&&!isNaN(parseInt(parts[1]))&&parseInt(parts[1])>=0&&parseInt(parts[1])<=59;
     if(!ok){toast('시간 형식이 올바르지 않습니다. (H:MM 형식)','wt');return;}
-
-    var inputMin = parseInt(parts[0])*60 + parseInt(parts[1]);
-
-    /* 00:00 = 미입력 상태로 처리 */
-    if(inputMin === 0){ val = ''; }
-    /* 1분 이상이면 최소 1시간 체크 */
-    else if(inputMin < 60){toast('인정시간은 최소 1:00 이상 입력해야 합니다.','wt');return;}
-
-    /* 신청 시간(r.hours) 기준 초과 체크 */
-    var appliedMin = Math.round((parseFloat(r.hours)||0)*60);
-    if(appliedMin > 0 && inputMin > appliedMin){
-      var appliedH = Math.floor(appliedMin/60), appliedM = appliedMin%60;
-      toast('신청 시간('+(appliedH+':'+(appliedM<10?'0':'')+appliedM)+') 초과 입력 불가합니다.','wt');
-      return;
-    }
-
-    /* 절대 상한: 10:00 */
-    if(inputMin > 600){toast('최대 10:00까지 입력 가능합니다.','wt');return;}
+    if(parseInt(parts[0])*60+parseInt(parts[1])>600){toast('최대 10:00까지 입력 가능합니다.','wt');return;}
   }
+  var r=otList.find(function(x){return String(x.id)===String(id);});
+  if(!r){toast('항목을 찾을 수 없습니다.','er');return;}
 
   /* 저장 버튼 비활성화 */
   var saveBtn=g('aon-'+id) ? g('aon-'+id).parentNode.querySelector('button') : null;
@@ -3873,88 +3918,32 @@ g('btn-exlv').addEventListener('click',function(){ if(!leaves.length){toast('\ub
 g('btn-exot').addEventListener('click',function(){ if(!otList.length){toast('\ub0b4\ubcf4\ub0bc \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.','wt');return;} var rows=[['\uc9c1\uc6d0','\uadfc\ubb34\uc77c','\uc2dc\uc791','\uc885\ub8cc','\uc2dc\uac04\uc218','\uc5c5\ubb34\ub0b4\uc6a9','\ube44\uace0','\uc2e0\uccad\uc77c','\uc0c1\ud0dc']]; otList.forEach(function(r){rows.push([r.empNm,r.dt,r.start,r.end,fmtH(r.hours),r.desc,r.note||'',r.appAt,r.status]);}); dlCSV(rows,'\ucd08\uacfc\uadfc\ubb34\ub0b4\uc5ed.csv'); toast('CSV \ub2e4\uc6b4\ub85c\ub4dc','ok'); });
 
 
-/* ── 새로고침 후 자동 로그인 복원 ─────────────────────────
-   모든 변수 선언 및 함수 정의 완료 후 실행
-   ────────────────────────────────────────────────────── */
-function tryAutoLogin(){
-  try{
-    var raw = localStorage.getItem('guntae_cu');
-    if(!raw) return false;
-    var saved = JSON.parse(raw);
-    if(!saved || !saved.id || !saved.name) return false;
-    /* 8시간(28800초) 초과 시 자동 로그인 거부 */
-    var SESSION_TTL = 8 * 60 * 60 * 1000;
-    if(saved._savedAt && (Date.now() - saved._savedAt) > SESSION_TTL){
-      localStorage.removeItem('guntae_cu');
-      return false;
+/* ── 감사 로그 렌더 ── */
+window.renderAuditLog = function(){
+  var tb = document.getElementById('audit-tb');
+  if(!tb) return;
+  try {
+    var logs = JSON.parse(localStorage.getItem('guntae_audit')||'[]').reverse();
+    if(!logs.length){
+      tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:28px;color:var(--txt3)">감사 로그가 없습니다.</td></tr>';
+      return;
     }
-
-    /* 1. CU 복원 */
-    CU = saved;
-
-    /* 2. localStorage에서 데이터 복원 */
-    try{ var se=localStorage.getItem('guntae_emps');
-         if(se){ var pe=JSON.parse(se); if(pe&&pe.length) emps=pe; } }catch(e){}
-    try{ var sl=localStorage.getItem('guntae_leaves');
-         if(sl) leaves=JSON.parse(sl); }catch(e){}
-    try{ var so=localStorage.getItem('guntae_ot');
-         if(so) otList=JSON.parse(so); }catch(e){}
-    try{ var sn=localStorage.getItem('guntae_notifs');
-         if(sn) notifs=JSON.parse(sn); }catch(e){}
-
-    /* 3. 화면 전환 */
-    g('login-wrap').style.display='none';
-    g('app').style.display='block';
-    initApp();
-
-    /* 4. 백그라운드 GAS 갱신 — 성공한 데이터만 반영 */
-    function safeApiGet(path){
-      return apiGet(path).catch(function(){ return {ok:false}; });
-    }
-    if(!USE_LOCAL_MODE){
-      Promise.all([
-        safeApiGet('/api/users'),
-        safeApiGet('/api/leaves'),
-        safeApiGet('/api/ot')
-      ]).then(function(results){
-        var ok=false;
-        try{
-          if(results[0].ok && results[0].users && results[0].users.length>0){
-            var newEmps = results[0].users.map(dbUserToEmp);
-            if(newEmps.length>0){ emps=newEmps; ok=true; }
-          }
-        }catch(e){}
-        try{
-          if(results[1].ok && results[1].leaves){
-            leaves = results[1].leaves.map(dbLeaveToLocal); ok=true;
-          }
-        }catch(e){}
-        try{
-          if(results[2].ok && results[2].ot){
-            otList = results[2].ot.map(dbOtToLocal); ok=true;
-          }
-        }catch(e){}
-        if(ok && CU){
-          /* CU 동기화: 서버 id 보존 */
-          var found=emps.find(function(e){
-            return String(e.dbId)===String(CU.dbId)||String(e.id)===String(CU.id)||e.name===CU.name;
-          });
-          if(found){
-            var keepDbId=CU.dbId, keepId=CU.id;
-            CU=found; CU.dbId=keepDbId; CU.id=keepId;
-          }
-          saveData();
-          try{ renderDash(); }catch(e){}
-          try{ updND(); updPend(); }catch(e){}
-        }
-      });
-    }
-    return true;
-  }catch(ex){ return false; }
-}
-
-/* 페이지 로드 시 자동 로그인 시도 */
-tryAutoLogin();
+    tb.innerHTML = logs.map(function(l){
+      var ts = l.ts ? new Date(l.ts).toLocaleString('ko-KR') : '-';
+      var actionColor = l.action.indexOf('삭제')>-1||l.action.indexOf('반려')>-1 ? 'color:var(--acc4);'
+                      : l.action.indexOf('승인')>-1 ? 'color:var(--acc2);'
+                      : l.action.indexOf('로그인')>-1 ? 'color:var(--acc);' : '';
+      return '<tr>'
+        +'<td style="font-size:.78rem;color:var(--txt2);white-space:nowrap;">'+ts+'</td>'
+        +'<td style="font-weight:600;">'+l.user+'</td>'
+        +'<td><span style="'+actionColor+'font-weight:600;">'+l.action+'</span></td>'
+        +'<td style="font-size:.82rem;color:var(--txt2);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+l.detail+'</td>'
+        +'</tr>';
+    }).join('');
+  } catch(e){
+    tb.innerHTML='<tr><td colspan="4" style="color:var(--acc4);padding:16px;">로그 읽기 오류</td></tr>';
+  }
+};
 
 }); // DOMContentLoaded end
 </script>
